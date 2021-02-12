@@ -1,0 +1,25 @@
+/* Mobile styles for home page. */
+.index ul li {
+  margin-bottom: 8px; }
+.index .red {
+  color: #f1276f;
+  display: inline; }
+
+h1 {
+  font-size: 22px; }
+
+h2 {
+  font-size: 20px; }
+
+h3 {
+  font-size: 18px; }
+
+p, div, ul, li {
+  font-size: 12px; }
+
+pre, code, kbd, samp {
+  color: #000;
+  font-size: 10px; }
+
+ol, ul {
+  padding-left: 20px; }
