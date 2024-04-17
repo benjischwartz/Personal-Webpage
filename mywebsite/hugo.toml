@@ -1,0 +1,68 @@
+baseurl = "http://www.example.com"
+title = "Benjamin Schwartz"
+theme = "hugo-coder"
+languagecode = "en"
+defaultcontentlanguage = "en"
+
+paginate = 20
+
+disqusShortname = "benjischwartz"
+
+[markup.highlight]
+style = "github-dark"
+
+[params]
+  author = "Benjamin Schwartz"
+  info = "Computer Engineer & Problem Solver"
+  description = "Benjamin Schwartz's personal website"
+  keywords = "blog,developer,personal"
+  avatarurl = "images/chip.jpg"
+  #gravatar = "john.doe@example.com"
+
+  faviconSVG = "/images/chip.jpg"
+  favicon_32 = "/images/chip.jpg"
+  favicon_16 = "/images/chip.jpg"
+
+  since = 2024
+
+  enableTwemoji = true
+
+  colorScheme = "auto"
+  hidecolorschemetoggle = false
+
+  # customCSS = ["css/custom.css"]
+  # customSCSS = ["scss/custom.scss"]
+  # customJS = ["js/custom.js"]
+
+[taxonomies]
+  category = "categories"
+  series = "series"
+  tag = "tags"
+  author = "authors"
+
+# Social links
+[[params.social]]
+  name = "Github"
+  icon = "fa-brands fa-github fa-2x"
+  weight = 1
+  url = "https://github.com/benjischwartz/"
+[[params.social]]
+  name = "LinkedIn"
+  icon = "fa-brands fa-linkedin fa-2x"
+  weight = 2
+  url = "https://LinkedIn.com/in/benjaminjschwartz/"
+[[params.social]]
+  name = "File"
+  icon = "fa-solid fa-file fa-2x"
+  weight = 3
+  url = "https://drive.google.com/file/d/1WfI-IznNBwUbZOG3TQgfSZtf_xnPIRJi/view?usp=sharing"
+
+# Menu links
+[[menu.main]]
+  name = "About"
+  weight = 1
+  url = "about/"
+[[menu.main]]
+  name = "Projects"
+  weight = 2
+  url = "projects/"

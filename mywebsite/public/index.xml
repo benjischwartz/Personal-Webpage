@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Benjamin Schwartz</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Benjamin Schwartz</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 17 Apr 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>I am a software engineer and problem solver from Sydney, Australia.&#xA;As an undergrad, I studied at the University of New South Wales, in a Bachelor of Computer Engineering (Hons). I have been on the Dean&amp;rsquo;s Honour&amp;rsquo;s list, and maintained an HD-average. I was recently awarded the &amp;lsquo;Brightest Minds&amp;rsquo; full scholarship for postgraduate studies at UNSW. My academic work covered many topics in computer science, focussing on both software and hardware design.</description>
+    </item>
+    <item>
+      <title>Projects</title>
+      <link>http://localhost:1313/projects/</link>
+      <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/</guid>
+      <description>CellSim: Full-stack development of a web-hosted editing and visualization tool for CellML models. Client-server architecture (backend in C++using Mongoose, frontend with VueJS). Repository.&#xA;Custom Rust Interpreter: As part of my univerisity studies, I build an interpreter for the Logo language in Rust. Repository.&#xA;Zipf&amp;rsquo;s Law: A project to validate the rank-frequency distribution of the English language, given a large enough sample of text. This python program starts at the Wikipedia page for &amp;ldquo;Team sport&amp;rdquo; and follows the first link in each page, provided it has not been visited before.</description>
+    </item>
+  </channel>
+</rss>
