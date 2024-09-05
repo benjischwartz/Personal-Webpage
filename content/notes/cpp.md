@@ -1,3 +1,4 @@
++++
 title = "C++ Notes"
 description = "Benjamin Schwartz's C++ Notes"
 date = "2024-04-05"
@@ -6,7 +7,9 @@ author = "Benjamin Schwartz"
 +++
 
 Here are my notes on C++ topics...
-- Topic 1 
-- Topic 2 
+
+
+
+
 
 
