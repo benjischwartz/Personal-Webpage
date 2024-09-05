@@ -7,6 +7,3 @@ author = "Benjamin Schwartz"
 +++
 
 Here's a collection of my notes from various topics:
-
-* [C++](cpp/)
-
