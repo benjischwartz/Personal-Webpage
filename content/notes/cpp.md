@@ -22,7 +22,7 @@ author = "Benjamin Schwartz"
 
 # Type Deduction
 
-## Template Type deduction
+## Template Type Deduction
 
 For the following general template form:
 
@@ -32,12 +32,44 @@ void f(ParamType param);
 f(expr);               // deduce T and ParamType from expr
 ```
 
-Three cases are possible:
+*Three cases* are possible:
 
-1. `ParamType` is reference/pointer, but **not** a universal reference
-    1. Reference → ignore reference part, then pattern-match `expr`'s type against `ParamType` to determine `T`
-2. `ParamType` is a universal reference
-3. `ParamType` is neither a pointer nor a reference
+**CASE 1:**
+
+`ParamType` is reference/pointer, but **not** a universal reference
+
+- Reference → ignore reference part, then pattern-match `expr`'s type against `ParamType` to determine `T`
+- Note below: “constness” of the object becomes part of type deduced for `T`. If the parameter was `f(const T&)`, we would see that `T` would become `int` for each of the three cases (`const` no longer deduced for `T`).
+
+```cpp
+template<typename T>
+void f(T& param);
+
+int x = 27;
+const int cx = x;
+const int& rx = x;
+
+f(x);   // T is int, param's type is int&
+f(cx);  // T is const int, param's type is const int&
+f(rx);  // T is const int, param's type is const int&
+```
+
+- Same example but with a pointer, very similar
+
+```cpp
+template<typename T>
+void f(T* param);
+
+int x = 27;
+const int *px = &x;      // px is a pointer to x as const int 
+
+f(&x);  // T is int, param's type is int*
+f(px);  // T is const int, param's type is const int*
+```
+
+**CASE 2:**
+
+`ParamType` is a universal reference
 
 <aside>
 💡
@@ -49,8 +81,141 @@ Three cases are possible:
 There are two types associated with `&&`. 
 
 - One is an rvalue reference.
+- The other is a **universal reference**
 
-## Value Categories
+Rule of thumb: If a variable or parameter is declared to have type `T&&` for some **deduced type `T` ,** then it is a universal reference → it may be either an lvalue ref, or an rvalue ref
+
+- if `expr` is an lvalue, both `T` and `ParamType` are deduced to be lvalue references.
+- if `expr` is an rvalue, “normal” rules apply (Case 1)
+
+```cpp
+template<typename T>
+void f(T&& param);
+
+int x = 27;
+const int cx = x;
+const int& rx = x;
+
+f(x);       // x is lvalue => T is int&, so is param's type
+f(cx);      // x is lvalue => T is const int&, so is param's type
+f(rx);      // x is lvalue => T is const int&, so is param's type
+f(27);      // 27 is rvalue => T is int, param's type is int&&
+```
+
+**CASE 3:**
+
+`ParamType` is neither a pointer nor a reference ⇒ pass by value
+
+- Pretty straightforward: `param` will always be a copy of the object passed in, so any reference or `const`ness is ignored.
+
+A tricky example:
+
+```cpp
+template<typename T>
+void f(T param);
+
+const char* const ptr = "Hello";   // const ptr to a const object
+f(ptr);                            // param's type is const char*
+```
+
+- `ptr` is a const pointer (address can’t be changed or set to `nullptr`) pointing to a `const` object `const char*` . As before, since we are passing by value, the `const`ness of the pointer is ignored, and the type deduced for `param` will just be `const char*` .
+
+### Array Arguments
+
+- **array types** are **different** to **pointer types.**
+- arrays **decay** into pointers to the first element:
+
+```cpp
+const char name[] = "Benji";      // name is type const char[6]
+const char *ptrToName = name;     // array decays to pointer
+
+template<typename T>
+void f(T param);
+f(name);          // T's type will decay to const char * (ptr to first element)
+
+// BUT...
+template<typename T>
+void f(T& param);
+f(name);         // Can pass a *reference* to an array
+								 // T's type will be const char(&)[6], with size included!
+								 
+template<typename T, std::size_t N>
+constexpr std::size_t arraySize(T (&)[N]) noexcept {
+	return N;      // Can *catch* the size of array and return it
+}
+```
+
+NB: the `constexpr` above make the result available during compilation
+
+### Function Arguments
+
+- in a similar way to array arguments, functions can **decay** to **function pointers**
+
+```cpp
+template<typename T>
+void f1(T param);
+
+template<typename T>
+void f2(T& param);
+
+void someFunc(int, double);
+f1(someFunc)    // param deduced as ptr-to-func void(*)(int, double)
+f2(someFunc)    // param deduced as ref-to-func void(&)(int, double)
+
+```
+
+## `auto` Type Deduction
+
+- is **literally the same** as template type deduction
+- `auto` plays the role of `T` and type specifier (e.g. `const`, `&`, `const&`) for variable act as `ParamType`
+
+**CASE 1:** (type specifier is **pointer/reference**, but not universal reference)
+
+**CASE 2:** (type specifier is a **universal reference**)
+
+**CASE 1:** (type specifier is **neither pointer nor reference**)
+
+```cpp
+auto x = 27;        // case 3
+const auto cx = x;  // case 3
+const auto& rx = x; // case 1
+
+auto&& uref1 = x;   // x is int and lvalue, uref1's type is int&
+auto&& uref2 = cx;  // x is const int and lvalue, uref2's type is const int&
+auto&& uref3 = 27;  // 27 is int and rvalue, uref3's type is int&&
+
+const char name[] = "Benji";    // name's type is const char[6]
+auto arr1 = name;   // arr1's type is const char*
+auto& arr2 = name;  // arr2's type is const char(&)[6]
+
+void someFunc(int, double);
+auto func1 = someFunc;  // func1 is void (*)(int, double)
+auto& func2 = someFunc; // func2 is void (&)(int, double)
+```
+
+<aside>
+💡
+
+***Q: How does `auto` differ from template type deduction?***
+
+</aside>
+
+- Is to do with initialiser lists. `auto` *assumes* that a braced initialiser represents a `std::initializer_list` but template type deduction doesn’t.
+- Common mistake: accidentally declaring a `std::initializer_list` variable.
+
+```cpp
+auto x1 = 27;        // type is int, value is 27
+auto x2(27);         // same
+
+auto x3 = { 27 };    // type is std::initializer_list<int>, value is { 27 }
+auto x4{ 27 };       // same
+
+template<typename T>
+void f(std::initializer_list<T> initList);
+f({1, 2, 3});        // T deduced as int, initList as std::initializer_list<int>
+```
+
+# Value Categories
 
 <aside>
 💡
@@ -95,7 +260,7 @@ int someVar = 35; // someVar is lvalue, 35 is rvalue
 35 = someVar;   // Not legal, since 35 is an rvalue and located on the left side
 ```
 
-### Reference types
+## Reference types
 
 <aside>
 💡
@@ -180,7 +345,7 @@ int& func() { return 42; }    // WON'T compile, 42 is rvalue
 															// rvalue cannot bind to an lvalue reference
 ```
 
-### Forwarding references
+## Forwarding references
 
 ```cpp
 Widget&& var1 = Widget{};
@@ -203,7 +368,7 @@ void someMethod(const Widget &);
 someMethod(*foo);    // call method with *foo
 ```
 
-### Const qualifier
+## Const qualifier
 
 “Who is not allowed to change what”.
 
@@ -218,12 +383,12 @@ void someMethod() const;         // someMethod() will not change this
 void someMethod(const Widget x); // someMethod() will not change x 
 ```
 
-### Constexpr vs const
+## Constexpr vs const
 
 - **`const`** means “promise not to change”
 - **`constepxr`** means “known at compile time”
 
-### Casting
+## Casting
 
 From most safe to least safe:
 
