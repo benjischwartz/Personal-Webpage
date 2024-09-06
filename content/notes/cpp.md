@@ -8,7 +8,6 @@ author = "Benjamin Schwartz"
 
 ## Table of Contents
 
-- [Effective Modern C++](#effective-modern-c++)
 - [Type Deduction](#type-deduction)
   - [Template Type Deduction](#template-type-deduction)
     - [Array Arguments](#array-arguments)
