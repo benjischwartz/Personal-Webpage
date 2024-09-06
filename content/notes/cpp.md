@@ -6,7 +6,20 @@ aliases = ["cpp"]
 author = "Benjamin Schwartz"
 +++
 
-# Effective Modern C++
+## Table of Contents
+
+- [Effective Modern C++](#effective-modern-c++)
+- [Type Deduction](#type-deduction)
+  - [Template Type Deduction](#template-type-deduction)
+    - [Array Arguments](#array-arguments)
+    - [Function Arguments](#function-arguments)
+  - [`auto` Type Deduction](#`auto`-type-deduction)
+- [Value Categories](#value-categories)
+  - [Reference types](#reference-types)
+  - [Forwarding references](#forwarding-references)
+  - [Const qualifier](#const-qualifier)
+  - [Constexpr vs const](#constexpr-vs-const)
+  - [Casting](#casting)
 
 # Type Deduction
 
