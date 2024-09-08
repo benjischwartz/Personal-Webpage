@@ -14,13 +14,28 @@ author = "Benjamin Schwartz"
     - [Function Arguments](#function-arguments)
   - [`auto` Type Deduction](#`auto`-type-deduction)
 - [Value Categories](#value-categories)
-  - [Reference types](#reference-types)
-  - [Forwarding references](#forwarding-references)
-  - [Const qualifier](#const-qualifier)
-  - [Constexpr vs const](#constexpr-vs-const)
+  - [Reference Types](#reference-types)
+  - [Forwarding References](#forwarding-references)
+  - [`const` Qualifier](#`const`-qualifier)
+  - [`constexpr` vs `const`](#`constexpr`-vs-`const`)
+  - [`static` Keyword](#`static`-keyword)
   - [Casting](#casting)
+- [Concurrency](#concurrency)
+  - [Threading with `std::thread`](#threading-with-`std::thread`)
+    - [When to Use](#when-to-use)
+    - [`join()`](#`join()`)
+    - [`std::thread` with a Lambda](#`std::thread`-with-a-lambda)
+    - [Multiple Threads](#multiple-threads)
+    - [Using `std::jthread`](#using-`std::jthread`)
+  - [Preventing Data Races and `std::mutex`](#preventing-data-races-and-`std::mutex`)
+  - [Preventing Deadlock with `std::lock_guard`](#preventing-deadlock-with-`std::lock_guard`)
+  - [Using `std::atomic` to Update a Shared Value](#using-`std::atomic`-to-update-a-shared-value)
+- [The Compiler](#the-compiler)
+  - [Compilation Unit](#compilation-unit)
 
 # Type Deduction
+
+**Automatic detection** of the **data type**
 
 ## Template Type Deduction
 
@@ -260,7 +275,7 @@ int someVar = 35; // someVar is lvalue, 35 is rvalue
 35 = someVar;   // Not legal, since 35 is an rvalue and located on the left side
 ```
 
-## Reference types
+## Reference Types
 
 <aside>
 💡
@@ -345,7 +360,7 @@ int& func() { return 42; }    // WON'T compile, 42 is rvalue
 															// rvalue cannot bind to an lvalue reference
 ```
 
-## Forwarding references
+## Forwarding References
 
 ```cpp
 Widget&& var1 = Widget{};
@@ -368,7 +383,7 @@ void someMethod(const Widget &);
 someMethod(*foo);    // call method with *foo
 ```
 
-## Const qualifier
+## `const` Qualifier
 
 “Who is not allowed to change what”.
 
@@ -383,10 +398,79 @@ void someMethod() const;         // someMethod() will not change this
 void someMethod(const Widget x); // someMethod() will not change x 
 ```
 
-## Constexpr vs const
+## `constexpr` vs `const`
 
 - **`const`** means “promise not to change”
 - **`constepxr`** means “known at compile time”
+
+## `static` Keyword
+
+- Different meanings with different types
+- **static variables**
+    - in a **function**: space is allocated **only once** for the **lifetime** of program. Value in previous call gets carried through the next function call. Below example will print `0 1 2 3 4 5`
+    
+    ```cpp
+    void demo() {
+    	static int count = 0;
+    	cout << count << " ";
+    	++count;
+    }
+    int main() {
+    	for (int i = 0; i < 5; ++i) {
+    		demo();
+    	}
+    	return 0;
+    }
+    ```
+    
+    - in a **class**: initialised only **once** and are in a **separate static storage**. Are **shared across objects of the class**. Reference it using class name and `::` .
+    
+    ```cpp
+    class A {
+    public: 
+    	static int i;
+    }
+    
+    A::i = 1;
+    
+    int main() {
+    	A obj;
+    	cout << obj.i;
+    }
+    ```
+    
+- **static members of class**
+    - **static class objects:** Objects when declared static have **lifetime of the program.**
+    - **static functions in a class**: like static variables, don’t depend on object of the class. Invoke using the `.` operator
+    
+    ```cpp
+    class A {
+    public:
+    	static void printMsg() { "Hello!\n" };
+    }
+    
+    int main() {
+    	A::printMsg();
+    }
+    
+    ```
+    
+
+<aside>
+💡
+
+***Q: What does `static` mean when used as a global variable?***
+
+</aside>
+
+- If several classes were to include the same header file `Settings.h` , and this file contained the global variable `static bool boolVariable`
+    - if we try to modify this variable from a class then **each compilation unit gets its own copy**. `static` makes the variable **local to the compilation unit**
+    - We could fix this problem by using `extern` ⇒ tells compiler that variable exists in another compilation unit, and will be resolved by the linker
+
+<aside>
+💡
+
+</aside>
 
 ## Casting
 
@@ -398,3 +482,178 @@ From most safe to least safe:
 - `const_cast` only used to remove const
 - `reinterpret_cast` forcing compiler ⇒ “shut up”. Dangerous, use sparingly
 - `(int)`C-style cast
+
+# Concurrency
+
+[Mike Shah Concurrency Series](https://www.youtube.com/playlist?list=PLvv0ScY6vfd_ocTP2ZLicgqKnvq50OCXM)
+
+- **More throughput** since more tasks happening in parallel = better performance
+- **Concurrency:** multiple things can happen at once, but **order matters,** might have to **wait on shared resources** (One coffee machine example, Orchestra example, Dinner conversation)
+    - CS Example: memory allocator, File I/O, Network requests (awaiting data)
+    - Single CPU core has **time-share system**, might be multiple cores.
+    - **Multiple cores** solve the problem of too much heat being generated as transistors are packed closer and closer.
+- **Parallelism:** Everything happens at once, instantaneously (Two coffee machines)
+
+## Threading with `std::thread`
+
+- **Thread =** “lightweight process”
+    - 1 Process (application) can have many threads.
+    - Thread execution starts with **main thread**
+    - Has own **stack for local variables**
+        - Data registers, stack pointers, program counter
+    - But shares **code, data and kernel context**
+        - Shared libraries, run-time heap, r/w data, read-only code/data
+        - kernel context: VM structures, descriptor table, brk pointer
+- Allows us to execute **multiple control flows** at the same time
+
+### When to Use
+
+- Heavy computation
+    - e.g. GPU for graphics, resolve complex computation
+- Separate work
+    - Gives performance and **simplifies logic** of problem
+
+### `join()`
+
+**Spawning thread** of a new thread (i.e. parent) can wait on child thread with `.join()`.
+
+Otherwise, the **program will be destroyed** before `myThread` has finished (when `main` returns).
+
+Enforces **order of execution. Blocks** the main thread.
+
+```cpp
+void test(int x) { 
+	std::cout << "Hello from thread!" << std::endl
+};
+int main() {
+	std::thread myThread(&test, 100);
+	myThread.join();
+	std::cout << "hello from main thread" << std::endl;
+}
+```
+
+- At some point, both threads are executing concurrently (maybe one same or different cores)
+
+### `std::thread` with a Lambda
+
+```cpp
+int main() {
+	auto lambda = [](int x) {
+		std::cout << "Hello from thread!" << std::endl
+	}
+	std::thread myThread(lambda, 100);
+	myThread.join();
+	std::cout << "hello from main thread" << std::endl;
+}
+```
+
+### Multiple Threads
+
+```cpp
+int main() {
+	auto lambda = [](int x) {
+		std::cout << "Hello from thread! " << std::this_thread::get_id() << std::endl
+		std::cout << "Argument passed in: " << x << std::endl;
+	}
+	
+	// Spawn 10 threads
+	std::vector<std::thread> threads;
+	for (int i = 0; i < 10; ++i) {
+		threads.push_back(std::thread(lambda, i));
+	}
+	
+	// Join 10 threads
+	for (int i = 0; i < 10; ++i) {
+		threads[i].join();
+	}
+	std::cout << "hello from main thread" << std::endl;
+}
+```
+
+- **thread id** is a unique identifier for each thread
+- `this_thread` is a namespace for currently executing thread
+- printing this out will probably be quite jumbled
+
+### Using `std::jthread`
+
+- is a `std::thread` with support for auto-joining and cancellation
+    - uses concept of **RAII**, when destructor is called, calls `request_stop()` and then `join()`
+- is in C++20, avoids joining errors
+
+## Preventing Data Races and `std::mutex`
+
+- It’s possible that a **globally accessible variable** across threads is **updated** **simultaneously**
+    - is a **data race**, gives non-deterministic results
+- `std::mutex` - Mutual Exclusion
+    - like having “one key” that only one person can use at once ⇒ reading/writing a variable
+- `lock` locks the mutex, blocks if `mutex` not available. `unlock` unlocks the mutex (duh)
+    - locks protect a **critical region** (e.g. the shared value). Is **atomic section of code** (smallest unit that can be accessed).
+    - `try_unlock` returns if fails to lock
+
+## Preventing Deadlock with `std::lock_guard`
+
+- **Deadlock** happens when a `mutex` lock never gets returned - other threads are blocked.
+- `lock_guard` is a `mutex` **wrapper** that uses RAII-style mechanism (when destructor called, any `mutex`'s held will be released, even when there is an **exception as below**)
+    - `lock_guard` ”holds” the `mutex`
+
+```cpp
+std::mutex gLock;
+static int shared_value = 0;
+
+void shared_value_increment() {
+	std::lock_guard<std::mutex> lockGuard(gLock);
+		try {
+			++shared_value;
+			throw "aborting...";
+		} catch(...) {
+			std::cout << "handle exception";
+			return;
+		}
+}
+
+// Use jthread to auto-join
+int main() {
+	std::vector<std::jthread> jthreads;
+	for (int i = 0; i < 1000; ++i) {
+		jthreads.push_back(std::jthread(shared_value_increment));
+	}
+}
+```
+
+- `lock_guard` is better than manually handling locks and unlocks, especially in the case of excpetions. Enforces RAII principles
+
+## Using `std::atomic` to Update a Shared Value
+
+- removes the need of `lock_guard` and `mutex`
+
+```cpp
+static std::atomic<int> shared_value = 0;
+void shared_value_increment() {
+	++shared_value;
+}
+
+int main() {
+	std::vector<std::thread> threads;
+	for (int i = 0; i < 1000; ++i) {
+		threads.push_back(std::thread(shared_value_increment));
+	}
+	for (int i = 0; i < 1000; ++i) {
+		threads[i].join();
+	}
+}
+```
+
+- **ONLY** `operator++` , `operator--` , etc. are supported for modifying atomic values
+    - Using `shared_value = shared_value + 1` is **not atomic**
+- Implemented using a **hardware mechanism**
+- can create **custom atomics**, but it has to be a simple type
+
+# The Compiler
+
+## Compilation Unit
+
+***Q: What is a compilation unit exactly?***
+
+1. **`#include`** is handled by pre-processor ⇒ all these `#include` directives are replaced by the content of the header files, as well as any `#define`, `#ifdef`, etc. 
+2. Therefore, **header file has no separate life**, compiler has no knowledge of them
+3. **compilation unit** is therefore the source file **after** the pre-processor has done its job.
