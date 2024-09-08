@@ -20,6 +20,7 @@ author = "Benjamin Schwartz"
   - [`constexpr` vs `const`](#`constexpr`-vs-`const`)
   - [`static` Keyword](#`static`-keyword)
   - [Casting](#casting)
+  - [`std::move`](#`std::move`)
 - [Concurrency](#concurrency)
   - [Threading with `std::thread`](#threading-with-`std::thread`)
     - [When to Use](#when-to-use)
@@ -32,6 +33,15 @@ author = "Benjamin Schwartz"
   - [Using `std::atomic` to Update a Shared Value](#using-`std::atomic`-to-update-a-shared-value)
 - [The Compiler](#the-compiler)
   - [Compilation Unit](#compilation-unit)
+- [Memory Management](#memory-management)
+  - [Static vs Dynamic memory](#static-vs-dynamic-memory)
+  - [Pointers vs References](#pointers-vs-references)
+  - [Smart pointers](#smart-pointers)
+    - [`std::shared_ptr`](#`std::shared_ptr`)
+    - [`std::unique_ptr`](#`std::unique_ptr`)
+- [Classes](#classes)
+  - [What is the `vtable` ?](#what-is-the-`vtable`-?)
+    - [`__vtbl*` pointer](#`__vtbl*`-pointer)
 
 # Type Deduction
 
@@ -54,7 +64,7 @@ f(expr);               // deduce T and ParamType from expr
 `ParamType` is reference/pointer, but **not** a universal reference
 
 - Reference → ignore reference part, then pattern-match `expr`'s type against `ParamType` to determine `T`
-- Note below: “constness” of the object becomes part of type deduced for `T`. If the parameter was `f(const T&)`, we would see that `T` would become `int` for each of the three cases (`const` no longer deduced for `T`).
+- Note below: “`const`ness” of the object becomes part of type deduced for `T`. If the parameter was `f(const T&)`, we would see that `T` would become `int` for each of the three cases (`const` no longer deduced for `T`).
 
 ```cpp
 template<typename T>
@@ -467,11 +477,6 @@ void someMethod(const Widget x); // someMethod() will not change x
     - if we try to modify this variable from a class then **each compilation unit gets its own copy**. `static` makes the variable **local to the compilation unit**
     - We could fix this problem by using `extern` ⇒ tells compiler that variable exists in another compilation unit, and will be resolved by the linker
 
-<aside>
-💡
-
-</aside>
-
 ## Casting
 
 From most safe to least safe:
@@ -482,6 +487,14 @@ From most safe to least safe:
 - `const_cast` only used to remove const
 - `reinterpret_cast` forcing compiler ⇒ “shut up”. Dangerous, use sparingly
 - `(int)`C-style cast
+
+## `std::move`
+
+[Mike Shah](https://www.youtube.com/watch?v=2gUqyt5JTtM)
+
+- allows for **efficient transfer of resources.** Transfer ownership **without copying.** We “adopt” or “steal” the value.
+- in a way “moving the lifetime of an object”
+- is literally just a **cast** to an **rvalue reference:** `static_cast<std::string&&>()`
 
 # Concurrency
 
@@ -646,7 +659,8 @@ int main() {
 - **ONLY** `operator++` , `operator--` , etc. are supported for modifying atomic values
     - Using `shared_value = shared_value + 1` is **not atomic**
 - Implemented using a **hardware mechanism**
-- can create **custom atomics**, but it has to be a simple type
+- can create **custom atomics**, but it has to be a trivially copyable type (i.e. types that are copybable by copying bits in memory or with `memcpy()` ). Types with a **virtual function** or **not stored in contiguous memory** could not be made atomic. Reason: **memory alignment**. [This article](https://ryonaldteofilo.medium.com/atomics-in-c-what-is-a-std-atomic-and-what-can-be-made-atomic-part-1-a8923de1384d) has more
+    - Can check `is_lock_free()` to see if implemented with `mutex` or similar
 
 # The Compiler
 
@@ -657,3 +671,200 @@ int main() {
 1. **`#include`** is handled by pre-processor ⇒ all these `#include` directives are replaced by the content of the header files, as well as any `#define`, `#ifdef`, etc. 
 2. Therefore, **header file has no separate life**, compiler has no knowledge of them
 3. **compilation unit** is therefore the source file **after** the pre-processor has done its job.
+
+# Memory Management
+
+## Static vs Dynamic memory
+
+- **statically allocated memory**: allocated at compile time
+
+```cpp
+int main() {
+	// Statically allocated memory at compile time
+	int i;
+	int a[10];
+	
+	// Dynamically allocated memory at run time
+	int* iptr = new int;
+	int* aptr = new int[10];
+	delete iptr;
+	delete aptr;	
+}
+```
+
+- **dynamically allocated memory**: don’t know ahead of time how much memory program will need. Use pointers for this and `new` keyword
+- `delete` frees the space of the object being pointed at, allowing it to be overwritten
+
+## Pointers vs References
+
+<aside>
+💡
+
+***Q: What is the difference between pointers and references?***
+
+</aside>
+
+- **Both** are implemented by storing the **address** of an object
+
+```cpp
+// Pointer:
+int a = 10;
+int *p = &a;
+// OK
+int *p;
+p = &a;
+// OK
+int b = 6;
+p = &b;
+
+// References:
+int &p = a;
+// NOT CORRECT (declare and initialise in two steps)
+int &p;
+p = a;
+// NOT CORRECT (reassign)
+int &p = a;
+int &p = b;
+```
+
+- **Reference** can be thought of as a **`const` pointer** with automatic indirection (the `*` is automatically applied for you).
+    - Must be **declared and initialized** in the **same step.**
+    - A pointer can be **re-assigned** but a reference **cannot**
+- **Pointer** takes up size on the stack, and has **own memory address**. **Reference** **shares the same memory address** with the original variable, and takes up **no space** on the stack
+
+|  | References | Pointers |
+| --- | --- | --- |
+| Reassignment | Cannot be reassigned | Can be reassigned |
+| Memory Address | Shares same address as original variable | Has own memory address |
+| Function | Is referring to another variable | Is storing the address of the variable |
+| Null Value | Doesn’t have null value | Can be `nullptr` |
+- **Performance** is the **same** (both pointers under the hood)
+- **Use references:** function params, return types
+- **Use pointers:** `nullptr` needed, pointer arithmetic, data structures like LL, Tree, etc.
+
+## Smart pointers
+
+[Code, Tech, and Tutorials](https://www.youtube.com/watch?v=u_FEZDfBPk8)
+
+[C++ From Scratch: std::shared_ptr](https://www.youtube.com/watch?v=4bdp9aHzuQY)
+
+- `#include <memory>`
+
+### `std::shared_ptr`
+
+- Share access to data, manage memory for you, doesn’t use `new` or `delete`
+- same functionality as pointer, also has `unique()` and `use_count()`  ⇒ how many others are holding a reference, when this is 0 it calls `delete`
+
+```cpp
+std::shared_ptr<float> stuff = std::make_shared<float>(20.f);
+```
+
+- `stuff.reset()` releases the memory, can set it to a new pointer
+- As with RAII, when a `shared_ptr` goes out of scope it decrements the `use_count` and/or frees the associated memory
+- Size is about **double** of a normal pointer
+
+### `std::unique_ptr`
+
+- More **isolated control**: only allows **one reference at a time** to control memory, when goes out of scope it calls`delete` on associated memory
+- has only `get()` and a few other functions (no `use_count()` etc.)
+
+```cpp
+std::unique_ptr<float> stuff = std::make_unique<float>();
+*stuff = 10.f;
+std::unique_ptr<float> other_stuff = std::make_unique<float>(*stuff.release());
+```
+
+- `release()` returns a pointer to the type, and calls `delete` on the old memory
+
+```cpp
+void another_scope(std::unique_ptr<float>& uptr) {
+	std::unique_ptr<float> pointertime = std::move(uptr);
+}
+```
+
+- take a reference to `uptr` and we can use `std::move` to **destroy the old `unique_ptr`** (but not the data) and assign the new `pointertime` to the **same data**
+- **address** will stay the same. The **data stays in the same place.**
+
+# Classes
+
+## What is the `vtable` ?
+
+- **“virtual table” ⇒** supports **dynamic dispatch**
+- **virtual** keyword creates a **virtual table**
+
+<aside>
+💡
+
+**KEY:**
+
+- Functions are defined is contained **in the class** itself (e.g. `B::bar()`)
+- **Every class** has its own **`vtable`**
+- Each **object** contains a `__vtbl*` pointer to the `vtable` for that class
+- Each **entry in the `vtbl`** points to the **correct** function definition
+- It goes: Object’s `__vtbl*` pointer ⇒ Class’ `vtbl` ⇒ Class’ function definition
+    - The **method name** is used as an **index** into the `vtbl`
+</aside>
+
+### `__vtbl*` pointer
+
+- **base class** contains a **`__vtbl*`** pointer, to a table which has the virtual function definition
+- **derived class** would also contain **its own `__vtbl*` pointer**
+- **Each entry** in the “**virtual table**” points to the **correct instance of the function** (e.g. back to the derived class function).
+- **overhead:** 4B or 8B pointer for `__vtbl*`
+
+```cpp
+class Base {
+public:
+	Base(){};
+	virtual ~Base() {};
+	virutal void MemberFunc() {
+		std::cout << "Base::MemberFunc()\n";
+	};
+
+class Derived : public Base {
+public:
+	Derived(){};
+	~Derived(){};
+	void MemberFunc() override {
+		std::cout << "Derived::MemberFunc()\n";
+	}
+};
+
+int main(){
+	// Create a Base* that can point to 'Base' or 'Derived' (anything that 'is-a' Base).
+	// Also a vtbl is created for this instance of the object
+	Base* instance = new Derived;
+	
+	// Vtbl points us to the correct member function
+	instance->MemberFunc();
+	delete instance;
+	
+	
+	instance = new Base;
+	base->MemberFunc();
+	delete instance;
+	return 0;
+}
+```
+
+<aside>
+💡
+
+***Q: Why do we make the Base destructor virtual?***
+
+</aside>
+
+- ensures that **when derived classes go out of scope** they are **deletion** of **each class in heirarchy** happens ****in **correct order** ⇒ avoids memory leaks
+- Use when you might **delete an instance** of a **derived** through a **pointer to base class**
+- Destruction happens from **bottom→up** (i.e. derived destructor called, then base). (The inverse is true when we call constructor, it goes **base then derived**).
+
+```cpp
+Base *b = new Derived();
+delete b;
+
+// OUTPUT:
+Base Constructor Called
+Derived Constructor called
+Derived destructor called
+Base destructor called
+```
