@@ -4,6 +4,7 @@ description = "Benjamin Schwartz's OS Notes"
 date = "2024-09-09"
 aliases = ["os"]
 author = "Benjamin Schwartz"
+weight = 2
 +++
 
 ## Table of Contents

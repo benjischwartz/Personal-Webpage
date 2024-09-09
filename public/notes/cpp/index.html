@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <title>
+  C&#43;&#43; Notes · Benjamin Schwartz
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="Benjamin Schwartz">
+<meta name="description" content="Benjamin Schwartz&#39;s C&#43;&#43; Notes">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="C&#43;&#43; Notes"/>
+<meta name="twitter:description" content="Benjamin Schwartz&#39;s C&#43;&#43; Notes"/>
+
+<meta property="og:title" content="C&#43;&#43; Notes" />
+<meta property="og:description" content="Benjamin Schwartz&#39;s C&#43;&#43; Notes" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/notes/cpp/" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2024-09-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-05T00:00:00+00:00" />
+
+
+
+
+<link rel="canonical" href="http://localhost:1313/notes/cpp/">
+
+
+<link rel="preload" href="/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.css" media="screen">
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.css" media="screen">
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="/images/chip.jpg" sizes="any">
+<link rel="icon" type="image/png" href="/images/chip.jpg" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/chip.jpg" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    
+    <a class="navigation-title" href="http://localhost:1313/">
+      Benjamin Schwartz
+    </a>
+    
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/about/">About</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/projects/">Projects</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/notes/">Notes</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/contact/">Contact</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container page">
+  <article>
+    <header>
+      <h1 class="title">
+        <a class="title-link" href="http://localhost:1313/notes/cpp/">
+          C&#43;&#43; Notes
+        </a>
+      </h1>
+    </header>
+
+    <h2 id="table-of-contents">
+  Table of Contents
+  <a class="heading-link" href="#table-of-contents">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="#type-deduction" >Type Deduction</a>
+<ul>
+<li><a href="#template-type-deduction" >Template Type Deduction</a>
+<ul>
+<li><a href="#array-arguments" >Array Arguments</a></li>
+<li><a href="#function-arguments" >Function Arguments</a></li>
+</ul>
+</li>
+<li><a href="#%60auto%60-type-deduction" ><code>auto</code> Type Deduction</a></li>
+</ul>
+</li>
+<li><a href="#value-categories" >Value Categories</a>
+<ul>
+<li><a href="#reference-types" >Reference Types</a></li>
+<li><a href="#forwarding-references" >Forwarding References</a></li>
+<li><a href="#%60const%60-qualifier" ><code>const</code> Qualifier</a></li>
+<li><a href="#%60constexpr%60-vs-%60const%60" ><code>constexpr</code> vs <code>const</code></a></li>
+<li><a href="#%60static%60-keyword" ><code>static</code> Keyword</a></li>
+<li><a href="#casting" >Casting</a></li>
+<li><a href="#%60std::move%60" ><code>std::move</code></a></li>
+</ul>
+</li>
+<li><a href="#concurrency" >Concurrency</a>
+<ul>
+<li><a href="#threading-with-%60std::thread%60" >Threading with <code>std::thread</code></a>
+<ul>
+<li><a href="#when-to-use" >When to Use</a></li>
+<li><a href="#%60join%28%29%60" ><code>join()</code></a></li>
+<li><a href="#%60std::thread%60-with-a-lambda" ><code>std::thread</code> with a Lambda</a></li>
+<li><a href="#multiple-threads" >Multiple Threads</a></li>
+<li><a href="#using-%60std::jthread%60" >Using <code>std::jthread</code></a></li>
+</ul>
+</li>
+<li><a href="#preventing-data-races-and-%60std::mutex%60" >Preventing Data Races and <code>std::mutex</code></a></li>
+<li><a href="#preventing-deadlock-with-%60std::lock_guard%60" >Preventing Deadlock with <code>std::lock_guard</code></a></li>
+<li><a href="#using-%60std::atomic%60-to-update-a-shared-value" >Using <code>std::atomic</code> to Update a Shared Value</a></li>
+</ul>
+</li>
+<li><a href="#the-compiler" >The Compiler</a>
+<ul>
+<li><a href="#compilation-unit" >Compilation Unit</a></li>
+</ul>
+</li>
+<li><a href="#memory-management" >Memory Management</a>
+<ul>
+<li><a href="#static-vs-dynamic-memory" >Static vs Dynamic memory</a></li>
+<li><a href="#pointers-vs-references" >Pointers vs References</a></li>
+<li><a href="#smart-pointers" >Smart pointers</a>
+<ul>
+<li><a href="#%60std::shared_ptr%60" ><code>std::shared_ptr</code></a></li>
+<li><a href="#%60std::unique_ptr%60" ><code>std::unique_ptr</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#classes" >Classes</a>
+<ul>
+<li><a href="#what-is-the-%60vtable%60-?" >What is the <code>vtable</code> ?</a>
+<ul>
+<li><a href="#%60__vtbl*%60-pointer" ><code>__vtbl*</code> pointer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="type-deduction">
+  Type Deduction
+  <a class="heading-link" href="#type-deduction">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p><strong>Automatic detection</strong> of the <strong>data type</strong></p>
+<h2 id="template-type-deduction">
+  Template Type Deduction
+  <a class="heading-link" href="#template-type-deduction">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>For the following general template form:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(ParamType param);
+</span></span><span style="display:flex;"><span>f(expr);               <span style="color:#8b949e;font-style:italic">// deduce T and ParamType from expr
+</span></span></span></code></pre></div><p><em>Three cases</em> are possible:</p>
+<p><strong>CASE 1:</strong></p>
+<p><code>ParamType</code> is reference/pointer, but <strong>not</strong> a universal reference</p>
+<ul>
+<li>Reference → ignore reference part, then pattern-match <code>expr</code>&rsquo;s type against <code>ParamType</code> to determine <code>T</code></li>
+<li>Note below: “<code>const</code>ness” of the object becomes part of type deduced for <code>T</code>. If the parameter was <code>f(const T&amp;)</code>, we would see that <code>T</code> would become <code>int</code> for each of the three cases (<code>const</code> no longer deduced for <code>T</code>).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(T<span style="color:#ff7b72;font-weight:bold">&amp;</span> param);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> x <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">27</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">int</span> cx <span style="color:#ff7b72;font-weight:bold">=</span> x;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">&amp;</span> rx <span style="color:#ff7b72;font-weight:bold">=</span> x;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>f(x);   <span style="color:#8b949e;font-style:italic">// T is int, param&#39;s type is int&amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f(cx);  <span style="color:#8b949e;font-style:italic">// T is const int, param&#39;s type is const int&amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f(rx);  <span style="color:#8b949e;font-style:italic">// T is const int, param&#39;s type is const int&amp;
+</span></span></span></code></pre></div><ul>
+<li>Same example but with a pointer, very similar</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(T<span style="color:#ff7b72;font-weight:bold">*</span> param);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> x <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">27</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">int</span> <span style="color:#ff7b72;font-weight:bold">*</span>px <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>x;      <span style="color:#8b949e;font-style:italic">// px is a pointer to x as const int 
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>f(<span style="color:#ff7b72;font-weight:bold">&amp;</span>x);  <span style="color:#8b949e;font-style:italic">// T is int, param&#39;s type is int*
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f(px);  <span style="color:#8b949e;font-style:italic">// T is const int, param&#39;s type is const int*
+</span></span></span></code></pre></div><p><strong>CASE 2:</strong></p>
+<p><code>ParamType</code> is a universal reference</p>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: What is a <a href="https://isocpp.org/blog/2012/11/universal-references-in-c11-scott-meyers"  class="external-link" target="_blank" rel="noopener">universal reference</a>?</strong></em></p>
+<!-- raw HTML omitted -->
+<p>There are two types associated with <code>&amp;&amp;</code>.</p>
+<ul>
+<li>One is an rvalue reference.</li>
+<li>The other is a <strong>universal reference</strong></li>
+</ul>
+<p>Rule of thumb: If a variable or parameter is declared to have type <code>T&amp;&amp;</code> for some <strong>deduced type <code>T</code> ,</strong> then it is a universal reference → it may be either an lvalue ref, or an rvalue ref</p>
+<ul>
+<li>if <code>expr</code> is an lvalue, both <code>T</code> and <code>ParamType</code> are deduced to be lvalue references.</li>
+<li>if <code>expr</code> is an rvalue, “normal” rules apply (Case 1)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(T<span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> param);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> x <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">27</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">int</span> cx <span style="color:#ff7b72;font-weight:bold">=</span> x;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">&amp;</span> rx <span style="color:#ff7b72;font-weight:bold">=</span> x;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>f(x);       <span style="color:#8b949e;font-style:italic">// x is lvalue =&gt; T is int&amp;, so is param&#39;s type
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f(cx);      <span style="color:#8b949e;font-style:italic">// x is lvalue =&gt; T is const int&amp;, so is param&#39;s type
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f(rx);      <span style="color:#8b949e;font-style:italic">// x is lvalue =&gt; T is const int&amp;, so is param&#39;s type
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f(<span style="color:#a5d6ff">27</span>);      <span style="color:#8b949e;font-style:italic">// 27 is rvalue =&gt; T is int, param&#39;s type is int&amp;&amp;
+</span></span></span></code></pre></div><p><strong>CASE 3:</strong></p>
+<p><code>ParamType</code> is neither a pointer nor a reference ⇒ pass by value</p>
+<ul>
+<li>Pretty straightforward: <code>param</code> will always be a copy of the object passed in, so any reference or <code>const</code>ness is ignored.</li>
+</ul>
+<p>A tricky example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(T param);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">char</span><span style="color:#ff7b72;font-weight:bold">*</span> <span style="color:#ff7b72">const</span> ptr <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;Hello&#34;</span>;   <span style="color:#8b949e;font-style:italic">// const ptr to a const object
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f(ptr);                            <span style="color:#8b949e;font-style:italic">// param&#39;s type is const char*
+</span></span></span></code></pre></div><ul>
+<li><code>ptr</code> is a const pointer (address can’t be changed or set to <code>nullptr</code>) pointing to a <code>const</code> object <code>const char*</code> . As before, since we are passing by value, the <code>const</code>ness of the pointer is ignored, and the type deduced for <code>param</code> will just be <code>const char*</code> .</li>
+</ul>
+<h3 id="array-arguments">
+  Array Arguments
+  <a class="heading-link" href="#array-arguments">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li><strong>array types</strong> are <strong>different</strong> to <strong>pointer types.</strong></li>
+<li>arrays <strong>decay</strong> into pointers to the first element:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">char</span> name[] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;Benji&#34;</span>;      <span style="color:#8b949e;font-style:italic">// name is type const char[6]
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span>ptrToName <span style="color:#ff7b72;font-weight:bold">=</span> name;     <span style="color:#8b949e;font-style:italic">// array decays to pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(T param);
+</span></span><span style="display:flex;"><span>f(name);          <span style="color:#8b949e;font-style:italic">// T&#39;s type will decay to const char * (ptr to first element)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// BUT...
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(T<span style="color:#ff7b72;font-weight:bold">&amp;</span> param);
+</span></span><span style="display:flex;"><span>f(name);         <span style="color:#8b949e;font-style:italic">// Can pass a *reference* to an array
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>								 <span style="color:#8b949e;font-style:italic">// T&#39;s type will be const char(&amp;)[6], with size included!
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>								 
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T, std<span style="color:#ff7b72;font-weight:bold">::</span>size_t N<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">constexpr</span> std<span style="color:#ff7b72;font-weight:bold">::</span>size_t arraySize(T (<span style="color:#ff7b72;font-weight:bold">&amp;</span>)[N]) <span style="color:#ff7b72">noexcept</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">return</span> N;      <span style="color:#8b949e;font-style:italic">// Can *catch* the size of array and return it
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>}
+</span></span></code></pre></div><p>NB: the <code>constexpr</code> above make the result available during compilation</p>
+<h3 id="function-arguments">
+  Function Arguments
+  <a class="heading-link" href="#function-arguments">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>in a similar way to array arguments, functions can <strong>decay</strong> to <strong>function pointers</strong></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f1(T param);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f2(T<span style="color:#ff7b72;font-weight:bold">&amp;</span> param);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">someFunc</span>(<span style="color:#ff7b72">int</span>, <span style="color:#ff7b72">double</span>);
+</span></span><span style="display:flex;"><span>f1(someFunc)    <span style="color:#8b949e;font-style:italic">// param deduced as ptr-to-func void(*)(int, double)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>f2(someFunc)    <span style="color:#8b949e;font-style:italic">// param deduced as ref-to-func void(&amp;)(int, double)
+</span></span></span></code></pre></div><h2 id="auto-type-deduction">
+  <code>auto</code> Type Deduction
+  <a class="heading-link" href="#auto-type-deduction">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>is <strong>literally the same</strong> as template type deduction</li>
+<li><code>auto</code> plays the role of <code>T</code> and type specifier (e.g. <code>const</code>, <code>&amp;</code>, <code>const&amp;</code>) for variable act as <code>ParamType</code></li>
+</ul>
+<p><strong>CASE 1:</strong> (type specifier is <strong>pointer/reference</strong>, but not universal reference)</p>
+<p><strong>CASE 2:</strong> (type specifier is a <strong>universal reference</strong>)</p>
+<p><strong>CASE 1:</strong> (type specifier is <strong>neither pointer nor reference</strong>)</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">auto</span> x <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">27</span>;        <span style="color:#8b949e;font-style:italic">// case 3
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">auto</span> cx <span style="color:#ff7b72;font-weight:bold">=</span> x;  <span style="color:#8b949e;font-style:italic">// case 3
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">auto</span><span style="color:#ff7b72;font-weight:bold">&amp;</span> rx <span style="color:#ff7b72;font-weight:bold">=</span> x; <span style="color:#8b949e;font-style:italic">// case 1
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">auto</span><span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> uref1 <span style="color:#ff7b72;font-weight:bold">=</span> x;   <span style="color:#8b949e;font-style:italic">// x is int and lvalue, uref1&#39;s type is int&amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">auto</span><span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> uref2 <span style="color:#ff7b72;font-weight:bold">=</span> cx;  <span style="color:#8b949e;font-style:italic">// x is const int and lvalue, uref2&#39;s type is const int&amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">auto</span><span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> uref3 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">27</span>;  <span style="color:#8b949e;font-style:italic">// 27 is int and rvalue, uref3&#39;s type is int&amp;&amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">char</span> name[] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;Benji&#34;</span>;    <span style="color:#8b949e;font-style:italic">// name&#39;s type is const char[6]
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">auto</span> arr1 <span style="color:#ff7b72;font-weight:bold">=</span> name;   <span style="color:#8b949e;font-style:italic">// arr1&#39;s type is const char*
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">auto</span><span style="color:#ff7b72;font-weight:bold">&amp;</span> arr2 <span style="color:#ff7b72;font-weight:bold">=</span> name;  <span style="color:#8b949e;font-style:italic">// arr2&#39;s type is const char(&amp;)[6]
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">someFunc</span>(<span style="color:#ff7b72">int</span>, <span style="color:#ff7b72">double</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">auto</span> func1 <span style="color:#ff7b72;font-weight:bold">=</span> someFunc;  <span style="color:#8b949e;font-style:italic">// func1 is void (*)(int, double)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">auto</span><span style="color:#ff7b72;font-weight:bold">&amp;</span> func2 <span style="color:#ff7b72;font-weight:bold">=</span> someFunc; <span style="color:#8b949e;font-style:italic">// func2 is void (&amp;)(int, double)
+</span></span></span></code></pre></div><!-- raw HTML omitted -->
+<p><em><strong>Q: How does <code>auto</code> differ from template type deduction?</strong></em></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>Is to do with initialiser lists. <code>auto</code> <em>assumes</em> that a braced initialiser represents a <code>std::initializer_list</code> but template type deduction doesn’t.</li>
+<li>Common mistake: accidentally declaring a <code>std::initializer_list</code> variable.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">auto</span> x1 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">27</span>;        <span style="color:#8b949e;font-style:italic">// type is int, value is 27
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">auto</span> <span style="color:#d2a8ff;font-weight:bold">x2</span>(<span style="color:#a5d6ff">27</span>);         <span style="color:#8b949e;font-style:italic">// same
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">auto</span> x3 <span style="color:#ff7b72;font-weight:bold">=</span> { <span style="color:#a5d6ff">27</span> };    <span style="color:#8b949e;font-style:italic">// type is std::initializer_list&lt;int&gt;, value is { 27 }
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">auto</span> x4{ <span style="color:#a5d6ff">27</span> };       <span style="color:#8b949e;font-style:italic">// same
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">template</span><span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">typename</span> T<span style="color:#ff7b72;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> f(std<span style="color:#ff7b72;font-weight:bold">::</span>initializer_list<span style="color:#ff7b72;font-weight:bold">&lt;</span>T<span style="color:#ff7b72;font-weight:bold">&gt;</span> initList);
+</span></span><span style="display:flex;"><span>f({<span style="color:#a5d6ff">1</span>, <span style="color:#a5d6ff">2</span>, <span style="color:#a5d6ff">3</span>});        <span style="color:#8b949e;font-style:italic">// T deduced as int, initList as std::initializer_list&lt;int&gt;
+</span></span></span></code></pre></div><h1 id="value-categories">
+  Value Categories
+  <a class="heading-link" href="#value-categories">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: What is an rvalue reference?</strong></em></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>Similar to lvalue refs, except they <strong>can only be initalised with rvalues</strong>. E.g. <code>int&amp;&amp; a = 50</code> since 50 is an <code>int</code> and a temporary object.</li>
+<li>Usually, <strong>rvalue == temporary object</strong> (not always)</li>
+</ul>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: What are <a href="https://en.cppreference.com/w/cpp/language/value_category"  class="external-link" target="_blank" rel="noopener">value categories</a>?</strong></em></p>
+<!-- raw HTML omitted -->
+<p><a href="https://www.youtube.com/watch?v=wkWtRDrjEH4"  class="external-link" target="_blank" rel="noopener">Copper Spice video</a></p>
+<p>An <em>expression</em> has two factors: <strong>data type</strong> and <strong>value category</strong>. May produce a result, and generate a side-effect.</p>
+<p>Main questions to ask: <strong>Does expression have a name? Does it have a memory location? Can you take the address of the expression?</strong></p>
+<ul>
+<li>lvalue: has name, must be able to take address using &amp; operator</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Widget <span style="color:#ff7b72;font-weight:bold">*</span>button <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72">new</span> Widget;
+</span></span></code></pre></div><ul>
+<li>Here, <code>button</code> is an lvalue, it is “pointer to Widget”, has a name, and can take its address.</li>
+<li>Also, <code>*button</code> is an lvalue, doesn’t have a name, can take the address of <code>*button</code> .</li>
+</ul>
+<p>So, both the pointer <em>and the thing it points to in memory</em> are both lvalues.</p>
+<p>NB: just because something is <code>const</code> doesn’t change its value category.</p>
+<ul>
+<li>rvalue: temporary value, doesn’t have a name, can’t take the address of it</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">int</span> someVar <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">35</span>; <span style="color:#8b949e;font-style:italic">// someVar is lvalue, 35 is rvalue
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#a5d6ff">35</span> <span style="color:#ff7b72;font-weight:bold">=</span> someVar;   <span style="color:#8b949e;font-style:italic">// Not legal, since 35 is an rvalue and located on the left side
+</span></span></span></code></pre></div><h2 id="reference-types">
+  Reference Types
+  <a class="heading-link" href="#reference-types">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: What are references?</strong></em></p>
+<!-- raw HTML omitted -->
+<p>There are three types: <strong>lvalue ref, const ref, rvalue ref</strong>.</p>
+<p>Pass by value: called function gets a <em>copy</em> of passed data.</p>
+<ul>
+<li>A function that passes by value can be given <em>either an lvalue or an rvalue</em>*.***</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// PASS BY VALUE
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">Widget</span>{};
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">func</span>(Widget pb);  <span style="color:#8b949e;font-style:italic">// pb is passed by value
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>Widget x;              <span style="color:#8b949e;font-style:italic">// x is lvalue
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(x);               <span style="color:#8b949e;font-style:italic">// call with lvalue valid
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(Widget{});        <span style="color:#8b949e;font-style:italic">// call with rvalue valid
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// PASS BY LVALUE REF
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">func</span>(Widget<span style="color:#ff7b72;font-weight:bold">&amp;</span> pb);  <span style="color:#8b949e;font-style:italic">// pb is passed by reference
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(x);               <span style="color:#8b949e;font-style:italic">// call with lvalue valid
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(Widget{});        <span style="color:#8b949e;font-style:italic">// call with rvalue ERROR 
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Caller would not be able to see changes made to temporary Widget
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// PASS BY CONST REF
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">func</span>(<span style="color:#ff7b72">const</span> Widget<span style="color:#ff7b72;font-weight:bold">&amp;</span> pb);  <span style="color:#8b949e;font-style:italic">// pb is passed by reference
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(x);               <span style="color:#8b949e;font-style:italic">// call with lvalue valid
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(Widget{});        <span style="color:#8b949e;font-style:italic">// call with rvalue valid
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Both are valid because func CAN&#39;T modify pb
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// There are no changes that we have to worry about the visibility of
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// PASS BY RVALUE REF
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">func</span>(Widget<span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> pb);  <span style="color:#8b949e;font-style:italic">// pb is passed by rvalue reference
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(x);               <span style="color:#8b949e;font-style:italic">// call with lvalue ERROR
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>func(Widget{});        <span style="color:#8b949e;font-style:italic">// call with rvalue valid 
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Passing lvalue is not valid, because func() might change x
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Caller has promised not to look at value of x after func()
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Rvalue ref is fine because any changes made wouldn&#39;t be seen by caller
+</span></span></span></code></pre></div><p>Summary:</p>
+<p>lvalue reference: Called method can modify data, and caller <strong>will</strong> observe changes made</p>
+<p>const reference: Called method can <strong>not</strong> modify data</p>
+<p>rvalue reference: Called method can modify data, and caller <strong>will not</strong> observe changes made</p>
+<ul>
+<li>Does <strong>not</strong> indicate <strong>value category</strong> but indicates <strong>data type ⇒ does not</strong> indicate how you can <strong>use</strong> the parameter</li>
+<li>rvalue reference data type declared using <code>&amp;&amp;</code> . <strong>Can be on left side</strong> of expression.</li>
+<li>Can <strong>bind</strong> an rvalue (category) to an rvalue reference, prolonging lifetime <strong>as if it were an lvalue</strong></li>
+</ul>
+<!-- raw HTML omitted -->
+<p><strong>KEY:</strong></p>
+<ul>
+<li>A <strong>data type</strong> is a value, and the operations associated with it (such as int, pointer, string, hash, lvalue ref, rvalue ref)</li>
+<li>An <strong>expression</strong> is a <strong>data type</strong> (as above) AND a <strong>value category</strong> (lvalue, rvalue)</li>
+<li>Confusingly, an rvalue/lvalue reference is a <strong>data type</strong></li>
+</ul>
+<!-- raw HTML omitted -->
+<p>Rvalue reference example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> func() { <span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">42</span>; }         <span style="color:#8b949e;font-style:italic">// Returns an rvalue reference to int
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> foo <span style="color:#ff7b72;font-weight:bold">=</span> func();  <span style="color:#8b949e;font-style:italic">// call to func() has value category rvalue
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>											 <span style="color:#8b949e;font-style:italic">// rvalue is bound to foo, foo is declared rvalue reference
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>											 <span style="color:#8b949e;font-style:italic">// foo has value category lvalue (has a name)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>											 <span style="color:#8b949e;font-style:italic">// foo has data type: rvalue reference, value category: lvalue
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#ff7b72">int</span> var <span style="color:#ff7b72;font-weight:bold">=</span> foo <span style="color:#ff7b72;font-weight:bold">+</span> <span style="color:#a5d6ff">3</span>;   <span style="color:#8b949e;font-style:italic">// valid: foo is lvalue
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	foo <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">47</span>;            <span style="color:#8b949e;font-style:italic">// valid: foo is lvalue, data type is rvalue ref so we can assign to it
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">&amp;</span> func() { <span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">42</span>; }    <span style="color:#8b949e;font-style:italic">// WON&#39;T compile, 42 is rvalue
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>															<span style="color:#8b949e;font-style:italic">// rvalue cannot bind to an lvalue reference
+</span></span></span></code></pre></div><h2 id="forwarding-references">
+  Forwarding References
+  <a class="heading-link" href="#forwarding-references">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Widget<span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> var1 <span style="color:#ff7b72;font-weight:bold">=</span> Widget{};
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">auto</span><span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> var2 <span style="color:#ff7b72;font-weight:bold">=</span> var1;
+</span></span></code></pre></div><ul>
+<li><code>var1</code> is rvalue reference, so lifetime of temporary <code>Widget</code> is extended for as long as <code>var1</code> is in scope.</li>
+<li><code>var2</code> uses <code>auto</code> which deduces type. A <strong>deduced type</strong> with <code>&amp;&amp;</code> becomes a <strong>forwarding reference</strong>. Will really be an lvalue reference like: <code>Widget&amp; var2 = var1</code>.</li>
+</ul>
+<p>Another example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// foo is an lvalue (has a name)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">const</span> Widget <span style="color:#ff7b72;font-weight:bold">*</span>foo;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// pass either lvalue/rvalue data type (since const ref)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// must pass data type of Widget             
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">someMethod</span>(<span style="color:#ff7b72">const</span> Widget <span style="color:#ff7b72;font-weight:bold">&amp;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>someMethod(<span style="color:#ff7b72;font-weight:bold">*</span>foo);    <span style="color:#8b949e;font-style:italic">// call method with *foo
+</span></span></span></code></pre></div><h2 id="const-qualifier">
+  <code>const</code> Qualifier
+  <a class="heading-link" href="#const-qualifier">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>“Who is not allowed to change what”.</p>
+<p>NB: <em>Read it backwards.</em> Clockwise/Spiral rule.</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">int</span> var;          <span style="color:#8b949e;font-style:italic">// const variable: var cannot be changed
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">const</span> Widget<span style="color:#ff7b72;font-weight:bold">&amp;</span> var;      <span style="color:#8b949e;font-style:italic">// const reference
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span><span style="color:#ff7b72">const</span> var;        <span style="color:#8b949e;font-style:italic">// const pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">const</span> <span style="color:#ff7b72">char</span><span style="color:#ff7b72;font-weight:bold">*</span> var;        <span style="color:#8b949e;font-style:italic">// pointer to const
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">someMethod</span>() <span style="color:#ff7b72">const</span>;         <span style="color:#8b949e;font-style:italic">// someMethod() will not change this
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">someMethod</span>(<span style="color:#ff7b72">const</span> Widget x); <span style="color:#8b949e;font-style:italic">// someMethod() will not change x 
+</span></span></span></code></pre></div><h2 id="constexpr-vs-const">
+  <code>constexpr</code> vs <code>const</code>
+  <a class="heading-link" href="#constexpr-vs-const">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong><code>const</code></strong> means “promise not to change”</li>
+<li><strong><code>constepxr</code></strong> means “known at compile time”</li>
+</ul>
+<h2 id="static-keyword">
+  <code>static</code> Keyword
+  <a class="heading-link" href="#static-keyword">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>
+<p>Different meanings with different types</p>
+</li>
+<li>
+<p><strong>static variables</strong></p>
+<ul>
+<li>in a <strong>function</strong>: space is allocated <strong>only once</strong> for the <strong>lifetime</strong> of program. Value in previous call gets carried through the next function call. Below example will print <code>0 1 2 3 4 5</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">demo</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">static</span> <span style="color:#ff7b72">int</span> count <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>;
+</span></span><span style="display:flex;"><span>	cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> count <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34; &#34;</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72;font-weight:bold">++</span>count;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>; i <span style="color:#ff7b72;font-weight:bold">&lt;</span> <span style="color:#a5d6ff">5</span>; <span style="color:#ff7b72;font-weight:bold">++</span>i) {
+</span></span><span style="display:flex;"><span>		demo();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>in a <strong>class</strong>: initialised only <strong>once</strong> and are in a <strong>separate static storage</strong>. Are <strong>shared across objects of the class</strong>. Reference it using class name and <code>::</code> .</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">A</span> {
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">public</span><span style="color:#ff7b72;font-weight:bold">:</span> 
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">static</span> <span style="color:#ff7b72">int</span> i;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>A<span style="color:#ff7b72;font-weight:bold">::</span>i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	A obj;
+</span></span><span style="display:flex;"><span>	cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> obj.i;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p><strong>static members of class</strong></p>
+<ul>
+<li><strong>static class objects:</strong> Objects when declared static have <strong>lifetime of the program.</strong></li>
+<li><strong>static functions in a class</strong>: like static variables, don’t depend on object of the class. Invoke using the <code>.</code> operator</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">A</span> {
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">public</span><span style="color:#ff7b72;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">static</span> <span style="color:#ff7b72">void</span> printMsg() { <span style="color:#a5d6ff">&#34;Hello!</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span> };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	A<span style="color:#ff7b72;font-weight:bold">::</span>printMsg();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ul>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: What does <code>static</code> mean when used as a global variable?</strong></em></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>If several classes were to include the same header file <code>Settings.h</code> , and this file contained the global variable <code>static bool boolVariable</code>
+<ul>
+<li>if we try to modify this variable from a class then <strong>each compilation unit gets its own copy</strong>. <code>static</code> makes the variable <strong>local to the compilation unit</strong></li>
+<li>We could fix this problem by using <code>extern</code> ⇒ tells compiler that variable exists in another compilation unit, and will be resolved by the linker</li>
+</ul>
+</li>
+</ul>
+<h2 id="casting">
+  Casting
+  <a class="heading-link" href="#casting">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>From most safe to least safe:</p>
+<ul>
+<li><code>static_cast</code> always defined, known at compile time</li>
+<li><code>dynamic_cast</code> always defined, might fail at runtime
+<ul>
+<li>cast from base class to child class. Might get <code>nullptr</code> at runtime</li>
+</ul>
+</li>
+<li><code>const_cast</code> only used to remove const</li>
+<li><code>reinterpret_cast</code> forcing compiler ⇒ “shut up”. Dangerous, use sparingly</li>
+<li><code>(int)</code>C-style cast</li>
+</ul>
+<h2 id="stdmove">
+  <code>std::move</code>
+  <a class="heading-link" href="#stdmove">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://www.youtube.com/watch?v=2gUqyt5JTtM"  class="external-link" target="_blank" rel="noopener">Mike Shah</a></p>
+<ul>
+<li>allows for <strong>efficient transfer of resources.</strong> Transfer ownership <strong>without copying.</strong> We “adopt” or “steal” the value.</li>
+<li>in a way “moving the lifetime of an object”</li>
+<li>is literally just a <strong>cast</strong> to an <strong>rvalue reference:</strong> <code>static_cast&lt;std::string&amp;&amp;&gt;()</code></li>
+</ul>
+<h1 id="concurrency">
+  Concurrency
+  <a class="heading-link" href="#concurrency">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p><a href="https://www.youtube.com/playlist?list=PLvv0ScY6vfd_ocTP2ZLicgqKnvq50OCXM"  class="external-link" target="_blank" rel="noopener">Mike Shah Concurrency Series</a></p>
+<ul>
+<li><strong>More throughput</strong> since more tasks happening in parallel = better performance</li>
+<li><strong>Concurrency:</strong> multiple things can happen at once, but <strong>order matters,</strong> might have to <strong>wait on shared resources</strong> (One coffee machine example, Orchestra example, Dinner conversation)
+<ul>
+<li>CS Example: memory allocator, File I/O, Network requests (awaiting data)</li>
+<li>Single CPU core has <strong>time-share system</strong>, might be multiple cores.</li>
+<li><strong>Multiple cores</strong> solve the problem of too much heat being generated as transistors are packed closer and closer.</li>
+</ul>
+</li>
+<li><strong>Parallelism:</strong> Everything happens at once, instantaneously (Two coffee machines)</li>
+</ul>
+<h2 id="threading-with-stdthread">
+  Threading with <code>std::thread</code>
+  <a class="heading-link" href="#threading-with-stdthread">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>Thread =</strong> “lightweight process”
+<ul>
+<li>1 Process (application) can have many threads.</li>
+<li>Thread execution starts with <strong>main thread</strong></li>
+<li>Has own <strong>stack for local variables</strong>
+<ul>
+<li>Data registers, stack pointers, program counter</li>
+</ul>
+</li>
+<li>But shares <strong>code, data and kernel context</strong>
+<ul>
+<li>Shared libraries, run-time heap, r/w data, read-only code/data</li>
+<li>kernel context: VM structures, descriptor table, brk pointer</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Allows us to execute <strong>multiple control flows</strong> at the same time</li>
+</ul>
+<h3 id="when-to-use">
+  When to Use
+  <a class="heading-link" href="#when-to-use">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Heavy computation
+<ul>
+<li>e.g. GPU for graphics, resolve complex computation</li>
+</ul>
+</li>
+<li>Separate work
+<ul>
+<li>Gives performance and <strong>simplifies logic</strong> of problem</li>
+</ul>
+</li>
+</ul>
+<h3 id="join">
+  <code>join()</code>
+  <a class="heading-link" href="#join">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p><strong>Spawning thread</strong> of a new thread (i.e. parent) can wait on child thread with <code>.join()</code>.</p>
+<p>Otherwise, the <strong>program will be destroyed</strong> before <code>myThread</code> has finished (when <code>main</code> returns).</p>
+<p>Enforces <strong>order of execution. Blocks</strong> the main thread.</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">test</span>(<span style="color:#ff7b72">int</span> x) { 
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;Hello from thread!&#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>endl
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span><span style="color:#ff7b72">thread</span> myThread(<span style="color:#ff7b72;font-weight:bold">&amp;</span>test, <span style="color:#a5d6ff">100</span>);
+</span></span><span style="display:flex;"><span>	myThread.join();
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;hello from main thread&#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>At some point, both threads are executing concurrently (maybe one same or different cores)</li>
+</ul>
+<h3 id="stdthread-with-a-lambda">
+  <code>std::thread</code> with a Lambda
+  <a class="heading-link" href="#stdthread-with-a-lambda">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">auto</span> lambda <span style="color:#ff7b72;font-weight:bold">=</span> [](<span style="color:#ff7b72">int</span> x) {
+</span></span><span style="display:flex;"><span>		std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;Hello from thread!&#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>endl
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span><span style="color:#ff7b72">thread</span> myThread(lambda, <span style="color:#a5d6ff">100</span>);
+</span></span><span style="display:flex;"><span>	myThread.join();
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;hello from main thread&#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="multiple-threads">
+  Multiple Threads
+  <a class="heading-link" href="#multiple-threads">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">auto</span> lambda <span style="color:#ff7b72;font-weight:bold">=</span> [](<span style="color:#ff7b72">int</span> x) {
+</span></span><span style="display:flex;"><span>		std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;Hello from thread! &#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>this_thread<span style="color:#ff7b72;font-weight:bold">::</span>get_id() <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>endl
+</span></span><span style="display:flex;"><span>		std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;Argument passed in: &#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> x <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Spawn 10 threads
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	std<span style="color:#ff7b72;font-weight:bold">::</span>vector<span style="color:#ff7b72;font-weight:bold">&lt;</span>std<span style="color:#ff7b72;font-weight:bold">::</span><span style="color:#ff7b72">thread</span><span style="color:#ff7b72;font-weight:bold">&gt;</span> threads;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>; i <span style="color:#ff7b72;font-weight:bold">&lt;</span> <span style="color:#a5d6ff">10</span>; <span style="color:#ff7b72;font-weight:bold">++</span>i) {
+</span></span><span style="display:flex;"><span>		threads.push_back(std<span style="color:#ff7b72;font-weight:bold">::</span><span style="color:#ff7b72">thread</span>(lambda, i));
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Join 10 threads
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>; i <span style="color:#ff7b72;font-weight:bold">&lt;</span> <span style="color:#a5d6ff">10</span>; <span style="color:#ff7b72;font-weight:bold">++</span>i) {
+</span></span><span style="display:flex;"><span>		threads[i].join();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;hello from main thread&#34;</span> <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> std<span style="color:#ff7b72;font-weight:bold">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li><strong>thread id</strong> is a unique identifier for each thread</li>
+<li><code>this_thread</code> is a namespace for currently executing thread</li>
+<li>printing this out will probably be quite jumbled</li>
+</ul>
+<h3 id="using-stdjthread">
+  Using <code>std::jthread</code>
+  <a class="heading-link" href="#using-stdjthread">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>is a <code>std::thread</code> with support for auto-joining and cancellation
+<ul>
+<li>uses concept of <strong>RAII</strong>, when destructor is called, calls <code>request_stop()</code> and then <code>join()</code></li>
+</ul>
+</li>
+<li>is in C++20, avoids joining errors</li>
+</ul>
+<h2 id="preventing-data-races-and-stdmutex">
+  Preventing Data Races and <code>std::mutex</code>
+  <a class="heading-link" href="#preventing-data-races-and-stdmutex">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>It’s possible that a <strong>globally accessible variable</strong> across threads is <strong>updated</strong> <strong>simultaneously</strong>
+<ul>
+<li>is a <strong>data race</strong>, gives non-deterministic results</li>
+</ul>
+</li>
+<li><code>std::mutex</code> - Mutual Exclusion
+<ul>
+<li>like having “one key” that only one person can use at once ⇒ reading/writing a variable</li>
+</ul>
+</li>
+<li><code>lock</code> locks the mutex, blocks if <code>mutex</code> not available. <code>unlock</code> unlocks the mutex (duh)
+<ul>
+<li>locks protect a <strong>critical region</strong> (e.g. the shared value). Is <strong>atomic section of code</strong> (smallest unit that can be accessed).</li>
+<li><code>try_unlock</code> returns if fails to lock</li>
+</ul>
+</li>
+</ul>
+<h2 id="preventing-deadlock-with-stdlock_guard">
+  Preventing Deadlock with <code>std::lock_guard</code>
+  <a class="heading-link" href="#preventing-deadlock-with-stdlock_guard">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>Deadlock</strong> happens when a <code>mutex</code> lock never gets returned - other threads are blocked.</li>
+<li><code>lock_guard</code> is a <code>mutex</code> <strong>wrapper</strong> that uses RAII-style mechanism (when destructor called, any <code>mutex</code>&rsquo;s held will be released, even when there is an <strong>exception as below</strong>)
+<ul>
+<li><code>lock_guard</code> ”holds” the <code>mutex</code></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std<span style="color:#ff7b72;font-weight:bold">::</span>mutex gLock;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">static</span> <span style="color:#ff7b72">int</span> shared_value <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">shared_value_increment</span>() {
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>lock_guard<span style="color:#ff7b72;font-weight:bold">&lt;</span>std<span style="color:#ff7b72;font-weight:bold">::</span>mutex<span style="color:#ff7b72;font-weight:bold">&gt;</span> lockGuard(gLock);
+</span></span><span style="display:flex;"><span>		<span style="color:#ff7b72">try</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#ff7b72;font-weight:bold">++</span>shared_value;
+</span></span><span style="display:flex;"><span>			<span style="color:#ff7b72">throw</span> <span style="color:#a5d6ff">&#34;aborting...&#34;</span>;
+</span></span><span style="display:flex;"><span>		} <span style="color:#ff7b72">catch</span>(...) {
+</span></span><span style="display:flex;"><span>			std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;handle exception&#34;</span>;
+</span></span><span style="display:flex;"><span>			<span style="color:#ff7b72">return</span>;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Use jthread to auto-join
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>vector<span style="color:#ff7b72;font-weight:bold">&lt;</span>std<span style="color:#ff7b72;font-weight:bold">::</span>jthread<span style="color:#ff7b72;font-weight:bold">&gt;</span> jthreads;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>; i <span style="color:#ff7b72;font-weight:bold">&lt;</span> <span style="color:#a5d6ff">1000</span>; <span style="color:#ff7b72;font-weight:bold">++</span>i) {
+</span></span><span style="display:flex;"><span>		jthreads.push_back(std<span style="color:#ff7b72;font-weight:bold">::</span>jthread(shared_value_increment));
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li><code>lock_guard</code> is better than manually handling locks and unlocks, especially in the case of excpetions. Enforces RAII principles</li>
+</ul>
+<h2 id="using-stdatomic-to-update-a-shared-value">
+  Using <code>std::atomic</code> to Update a Shared Value
+  <a class="heading-link" href="#using-stdatomic-to-update-a-shared-value">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>removes the need of <code>lock_guard</code> and <code>mutex</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">static</span> std<span style="color:#ff7b72;font-weight:bold">::</span>atomic<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">&gt;</span> shared_value <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">shared_value_increment</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72;font-weight:bold">++</span>shared_value;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>vector<span style="color:#ff7b72;font-weight:bold">&lt;</span>std<span style="color:#ff7b72;font-weight:bold">::</span><span style="color:#ff7b72">thread</span><span style="color:#ff7b72;font-weight:bold">&gt;</span> threads;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>; i <span style="color:#ff7b72;font-weight:bold">&lt;</span> <span style="color:#a5d6ff">1000</span>; <span style="color:#ff7b72;font-weight:bold">++</span>i) {
+</span></span><span style="display:flex;"><span>		threads.push_back(std<span style="color:#ff7b72;font-weight:bold">::</span><span style="color:#ff7b72">thread</span>(shared_value_increment));
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">int</span> i <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">0</span>; i <span style="color:#ff7b72;font-weight:bold">&lt;</span> <span style="color:#a5d6ff">1000</span>; <span style="color:#ff7b72;font-weight:bold">++</span>i) {
+</span></span><span style="display:flex;"><span>		threads[i].join();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li><strong>ONLY</strong> <code>operator++</code> , <code>operator--</code> , etc. are supported for modifying atomic values
+<ul>
+<li>Using <code>shared_value = shared_value + 1</code> is <strong>not atomic</strong></li>
+</ul>
+</li>
+<li>Implemented using a <strong>hardware mechanism</strong></li>
+<li>can create <strong>custom atomics</strong>, but it has to be a trivially copyable type (i.e. types that are copybable by copying bits in memory or with <code>memcpy()</code> ). Types with a <strong>virtual function</strong> or <strong>not stored in contiguous memory</strong> could not be made atomic. Reason: <strong>memory alignment</strong>. <a href="https://ryonaldteofilo.medium.com/atomics-in-c-what-is-a-std-atomic-and-what-can-be-made-atomic-part-1-a8923de1384d"  class="external-link" target="_blank" rel="noopener">This article</a> has more
+<ul>
+<li>Can check <code>is_lock_free()</code> to see if implemented with <code>mutex</code> or similar</li>
+</ul>
+</li>
+</ul>
+<h1 id="the-compiler">
+  The Compiler
+  <a class="heading-link" href="#the-compiler">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<h2 id="compilation-unit">
+  Compilation Unit
+  <a class="heading-link" href="#compilation-unit">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><em><strong>Q: What is a compilation unit exactly?</strong></em></p>
+<ol>
+<li><strong><code>#include</code></strong> is handled by pre-processor ⇒ all these <code>#include</code> directives are replaced by the content of the header files, as well as any <code>#define</code>, <code>#ifdef</code>, etc.</li>
+<li>Therefore, <strong>header file has no separate life</strong>, compiler has no knowledge of them</li>
+<li><strong>compilation unit</strong> is therefore the source file <strong>after</strong> the pre-processor has done its job.</li>
+</ol>
+<h1 id="memory-management">
+  Memory Management
+  <a class="heading-link" href="#memory-management">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<h2 id="static-vs-dynamic-memory">
+  Static vs Dynamic memory
+  <a class="heading-link" href="#static-vs-dynamic-memory">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>statically allocated memory</strong>: allocated at compile time</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Statically allocated memory at compile time
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#ff7b72">int</span> i;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span> a[<span style="color:#a5d6ff">10</span>];
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Dynamically allocated memory at run time
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">*</span> iptr <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72">new</span> <span style="color:#ff7b72">int</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">int</span><span style="color:#ff7b72;font-weight:bold">*</span> aptr <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72">new</span> <span style="color:#ff7b72">int</span>[<span style="color:#a5d6ff">10</span>];
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">delete</span> iptr;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">delete</span> aptr;	
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li><strong>dynamically allocated memory</strong>: don’t know ahead of time how much memory program will need. Use pointers for this and <code>new</code> keyword</li>
+<li><code>delete</code> frees the space of the object being pointed at, allowing it to be overwritten</li>
+</ul>
+<h2 id="pointers-vs-references">
+  Pointers vs References
+  <a class="heading-link" href="#pointers-vs-references">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: What is the difference between pointers and references?</strong></em></p>
+<!-- raw HTML omitted -->
+<ul>
+<li><strong>Both</strong> are implemented by storing the <strong>address</strong> of an object</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Pointer:
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">int</span> a <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">10</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#ff7b72;font-weight:bold">*</span>p <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>a;
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// OK
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">int</span> <span style="color:#ff7b72;font-weight:bold">*</span>p;
+</span></span><span style="display:flex;"><span>p <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>a;
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// OK
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">int</span> b <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">6</span>;
+</span></span><span style="display:flex;"><span>p <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>b;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// References:
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">int</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>p <span style="color:#ff7b72;font-weight:bold">=</span> a;
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// NOT CORRECT (declare and initialise in two steps)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">int</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>p;
+</span></span><span style="display:flex;"><span>p <span style="color:#ff7b72;font-weight:bold">=</span> a;
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// NOT CORRECT (reassign)
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span><span style="color:#ff7b72">int</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>p <span style="color:#ff7b72;font-weight:bold">=</span> a;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#ff7b72;font-weight:bold">&amp;</span>p <span style="color:#ff7b72;font-weight:bold">=</span> b;
+</span></span></code></pre></div><ul>
+<li><strong>Reference</strong> can be thought of as a <strong><code>const</code> pointer</strong> with automatic indirection (the <code>*</code> is automatically applied for you).
+<ul>
+<li>Must be <strong>declared and initialized</strong> in the <strong>same step.</strong></li>
+<li>A pointer can be <strong>re-assigned</strong> but a reference <strong>cannot</strong></li>
+</ul>
+</li>
+<li><strong>Pointer</strong> takes up size on the stack, and has <strong>own memory address</strong>. <strong>Reference</strong> <strong>shares the same memory address</strong> with the original variable, and takes up <strong>no space</strong> on the stack</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>References</th>
+<th>Pointers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reassignment</td>
+<td>Cannot be reassigned</td>
+<td>Can be reassigned</td>
+</tr>
+<tr>
+<td>Memory Address</td>
+<td>Shares same address as original variable</td>
+<td>Has own memory address</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>Is referring to another variable</td>
+<td>Is storing the address of the variable</td>
+</tr>
+<tr>
+<td>Null Value</td>
+<td>Doesn’t have null value</td>
+<td>Can be <code>nullptr</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Performance</strong> is the <strong>same</strong> (both pointers under the hood)</li>
+<li><strong>Use references:</strong> function params, return types</li>
+<li><strong>Use pointers:</strong> <code>nullptr</code> needed, pointer arithmetic, data structures like LL, Tree, etc.</li>
+</ul>
+<h2 id="smart-pointers">
+  Smart pointers
+  <a class="heading-link" href="#smart-pointers">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://www.youtube.com/watch?v=u_FEZDfBPk8"  class="external-link" target="_blank" rel="noopener">Code, Tech, and Tutorials</a></p>
+<p><a href="https://www.youtube.com/watch?v=4bdp9aHzuQY"  class="external-link" target="_blank" rel="noopener">C++ From Scratch: std::shared_ptr</a></p>
+<ul>
+<li><code>#include &lt;memory&gt;</code></li>
+</ul>
+<h3 id="stdshared_ptr">
+  <code>std::shared_ptr</code>
+  <a class="heading-link" href="#stdshared_ptr">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Share access to data, manage memory for you, doesn’t use <code>new</code> or <code>delete</code></li>
+<li>same functionality as pointer, also has <code>unique()</code> and <code>use_count()</code>  ⇒ how many others are holding a reference, when this is 0 it calls <code>delete</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std<span style="color:#ff7b72;font-weight:bold">::</span>shared_ptr<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;</span> stuff <span style="color:#ff7b72;font-weight:bold">=</span> std<span style="color:#ff7b72;font-weight:bold">::</span>make_shared<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;</span>(<span style="color:#a5d6ff">20.f</span>);
+</span></span></code></pre></div><ul>
+<li><code>stuff.reset()</code> releases the memory, can set it to a new pointer</li>
+<li>As with RAII, when a <code>shared_ptr</code> goes out of scope it decrements the <code>use_count</code> and/or frees the associated memory</li>
+<li>Size is about <strong>double</strong> of a normal pointer</li>
+</ul>
+<h3 id="stdunique_ptr">
+  <code>std::unique_ptr</code>
+  <a class="heading-link" href="#stdunique_ptr">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>More <strong>isolated control</strong>: only allows <strong>one reference at a time</strong> to control memory, when goes out of scope it calls<code>delete</code> on associated memory</li>
+<li>has only <code>get()</code> and a few other functions (no <code>use_count()</code> etc.)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std<span style="color:#ff7b72;font-weight:bold">::</span>unique_ptr<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;</span> stuff <span style="color:#ff7b72;font-weight:bold">=</span> std<span style="color:#ff7b72;font-weight:bold">::</span>make_unique<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">*</span>stuff <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">10.f</span>;
+</span></span><span style="display:flex;"><span>std<span style="color:#ff7b72;font-weight:bold">::</span>unique_ptr<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;</span> other_stuff <span style="color:#ff7b72;font-weight:bold">=</span> std<span style="color:#ff7b72;font-weight:bold">::</span>make_unique<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;</span>(<span style="color:#ff7b72;font-weight:bold">*</span>stuff.release());
+</span></span></code></pre></div><ul>
+<li><code>release()</code> returns a pointer to the type, and calls <code>delete</code> on the old memory</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">another_scope</span>(std<span style="color:#ff7b72;font-weight:bold">::</span>unique_ptr<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;&amp;</span> uptr) {
+</span></span><span style="display:flex;"><span>	std<span style="color:#ff7b72;font-weight:bold">::</span>unique_ptr<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">float</span><span style="color:#ff7b72;font-weight:bold">&gt;</span> pointertime <span style="color:#ff7b72;font-weight:bold">=</span> std<span style="color:#ff7b72;font-weight:bold">::</span>move(uptr);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>take a reference to <code>uptr</code> and we can use <code>std::move</code> to <strong>destroy the old <code>unique_ptr</code></strong> (but not the data) and assign the new <code>pointertime</code> to the <strong>same data</strong></li>
+<li><strong>address</strong> will stay the same. The <strong>data stays in the same place.</strong></li>
+</ul>
+<h1 id="classes">
+  Classes
+  <a class="heading-link" href="#classes">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<h2 id="what-is-the-vtable-">
+  What is the <code>vtable</code> ?
+  <a class="heading-link" href="#what-is-the-vtable-">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>“virtual table” ⇒</strong> supports <strong>dynamic dispatch</strong></li>
+<li><strong>virtual</strong> keyword creates a <strong>virtual table</strong></li>
+</ul>
+<!-- raw HTML omitted -->
+<p><strong>KEY:</strong></p>
+<ul>
+<li>Functions are defined is contained <strong>in the class</strong> itself (e.g. <code>B::bar()</code>)</li>
+<li><strong>Every class</strong> has its own <strong><code>vtable</code></strong></li>
+<li>Each <strong>object</strong> contains a <code>__vtbl*</code> pointer to the <code>vtable</code> for that class</li>
+<li>Each <strong>entry in the <code>vtbl</code></strong> points to the <strong>correct</strong> function definition</li>
+<li>It goes: Object’s <code>__vtbl*</code> pointer ⇒ Class’ <code>vtbl</code> ⇒ Class’ function definition
+<ul>
+<li>The <strong>method name</strong> is used as an <strong>index</strong> into the <code>vtbl</code></li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+<h3 id="__vtbl-pointer">
+  <code>__vtbl*</code> pointer
+  <a class="heading-link" href="#__vtbl-pointer">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li><strong>base class</strong> contains a <strong><code>__vtbl*</code></strong> pointer, to a table which has the virtual function definition</li>
+<li><strong>derived class</strong> would also contain <strong>its own <code>__vtbl*</code> pointer</strong></li>
+<li><strong>Each entry</strong> in the “<strong>virtual table</strong>” points to the <strong>correct instance of the function</strong> (e.g. back to the derived class function).</li>
+<li><strong>overhead:</strong> 4B or 8B pointer for <code>__vtbl*</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">Base</span> {
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">public</span><span style="color:#ff7b72;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>	Base(){};
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">virtual</span> <span style="color:#ff7b72;font-weight:bold">~</span>Base() {};
+</span></span><span style="display:flex;"><span>	virutal <span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">MemberFunc</span>() {
+</span></span><span style="display:flex;"><span>		std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;Base::MemberFunc()</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>;
+</span></span><span style="display:flex;"><span>	};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">Derived</span> <span style="color:#ff7b72;font-weight:bold">:</span> <span style="color:#ff7b72">public</span> Base {
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">public</span><span style="color:#ff7b72;font-weight:bold">:</span>
+</span></span><span style="display:flex;"><span>	Derived(){};
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72;font-weight:bold">~</span>Derived(){};
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">void</span> <span style="color:#d2a8ff;font-weight:bold">MemberFunc</span>() <span style="color:#ff7b72">override</span> {
+</span></span><span style="display:flex;"><span>		std<span style="color:#ff7b72;font-weight:bold">::</span>cout <span style="color:#ff7b72;font-weight:bold">&lt;&lt;</span> <span style="color:#a5d6ff">&#34;Derived::MemberFunc()</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">int</span> <span style="color:#d2a8ff;font-weight:bold">main</span>(){
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Create a Base* that can point to &#39;Base&#39; or &#39;Derived&#39; (anything that &#39;is-a&#39; Base).
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	<span style="color:#8b949e;font-style:italic">// Also a vtbl is created for this instance of the object
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	Base<span style="color:#ff7b72;font-weight:bold">*</span> instance <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72">new</span> Derived;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#8b949e;font-style:italic">// Vtbl points us to the correct member function
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>	instance<span style="color:#ff7b72;font-weight:bold">-&gt;</span>MemberFunc();
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">delete</span> instance;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	instance <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72">new</span> Base;
+</span></span><span style="display:flex;"><span>	base<span style="color:#ff7b72;font-weight:bold">-&gt;</span>MemberFunc();
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">delete</span> instance;
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<p><em><strong>Q: Why do we make the Base destructor virtual?</strong></em></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>ensures that <strong>when derived classes go out of scope</strong> they are <strong>deletion</strong> of <strong>each class in heirarchy</strong> happens ****in <strong>correct order</strong> ⇒ avoids memory leaks</li>
+<li>Use when you might <strong>delete an instance</strong> of a <strong>derived</strong> through a <strong>pointer to base class</strong></li>
+<li>Destruction happens from <strong>bottom→up</strong> (i.e. derived destructor called, then base). (The inverse is true when we call constructor, it goes <strong>base then derived</strong>).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Base <span style="color:#ff7b72;font-weight:bold">*</span>b <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#ff7b72">new</span> Derived();
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">delete</span> b;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// OUTPUT:
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>Base Constructor Called
+</span></span><span style="display:flex;"><span>Derived Constructor called
+</span></span><span style="display:flex;"><span>Derived destructor called
+</span></span><span style="display:flex;"><span>Base destructor called
+</span></span></code></pre></div>
+  </article>
+</section>
+
+  
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2024
+     Benjamin Schwartz 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.js"></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

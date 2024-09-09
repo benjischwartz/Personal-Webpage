@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <title>
+  OS Notes · Benjamin Schwartz
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="Benjamin Schwartz">
+<meta name="description" content="Benjamin Schwartz&#39;s OS Notes">
+<meta name="keywords" content="blog,developer,personal">
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="OS Notes"/>
+<meta name="twitter:description" content="Benjamin Schwartz&#39;s OS Notes"/>
+
+<meta property="og:title" content="OS Notes" />
+<meta property="og:description" content="Benjamin Schwartz&#39;s OS Notes" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/notes/os/" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2024-09-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-09T00:00:00+00:00" />
+
+
+
+
+<link rel="canonical" href="http://localhost:1313/notes/os/">
+
+
+<link rel="preload" href="/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.css" media="screen">
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.css" media="screen">
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="/images/chip.jpg" sizes="any">
+<link rel="icon" type="image/png" href="/images/chip.jpg" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/chip.jpg" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    
+    <a class="navigation-title" href="http://localhost:1313/">
+      Benjamin Schwartz
+    </a>
+    
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/about/">About</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/projects/">Projects</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/notes/">Notes</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/contact/">Contact</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container page">
+  <article>
+    <header>
+      <h1 class="title">
+        <a class="title-link" href="http://localhost:1313/notes/os/">
+          OS Notes
+        </a>
+      </h1>
+    </header>
+
+    <h2 id="table-of-contents">
+  Table of Contents
+  <a class="heading-link" href="#table-of-contents">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="#the-stack-&amp;-the-heap" >The Stack &amp; The Heap</a>
+<ul>
+<li><a href="#the-heap" >The Heap</a></li>
+<li><a href="#the-stack" >The Stack</a>
+<ul>
+<li><a href="#stack-overflow" >Stack Overflow</a></li>
+<li><a href="#stack-frames" >Stack Frames</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#virtual-memory" >Virtual Memory</a></li>
+</ul>
+<h1 id="the-stack--the-heap">
+  The Stack &amp; The Heap
+  <a class="heading-link" href="#the-stack--the-heap">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>A <strong>program</strong> uses memory that is divided into <strong>five main segments:</strong></p>
+<ol>
+<li><strong>code</strong> segment (compiled code, is read-only)</li>
+<li><strong>bss</strong> segment (zero-initialised global and static variables)</li>
+<li><strong>data</strong> segment (initialised global and static variables)</li>
+<li><strong>heap</strong> (dynamically allocated variables)</li>
+<li><strong>stack</strong> (local variables, stack frames incl. parameters, etc.)</li>
+</ol>
+<h2 id="the-heap">
+  The Heap
+  <a class="heading-link" href="#the-heap">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>A.k.a <strong>free store</strong>.</p>
+<p><code>new</code> operator returns a pointer to some region of the heap. <code>delete</code> returns the memory to the heap. Handled by <strong>allocator</strong></p>
+<ul>
+<li>Used for <strong>large chunks of memory</strong> (arrays, structs/classes), as well as data with <strong>unkown size</strong> at compile time, or <strong>size that might change</strong></li>
+<li><strong>slow</strong> to allocate, <strong>slow</strong> to dereference pointer (compared to directly accessing a variable)</li>
+<li>can <strong>leak memory</strong> if not careful ⇒ stays allocated until specifically deallocated, or <strong>program ends</strong> (and OS does cleanup)</li>
+</ul>
+<h2 id="the-stack">
+  The Stack
+  <a class="heading-link" href="#the-stack">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>A.k.a <strong>call stack</strong>.</p>
+<p>Tracks <strong>active functions</strong> (haven’t returned yet). Allocates functions parameters &amp; local variables.</p>
+<p>Program begins by <strong>pushing main()</strong> onto call stack.</p>
+<ul>
+<li>is <strong>fixed-size</strong> chunk of memory</li>
+<li>items being pushed/popped are <strong>stack frames</strong></li>
+<li><strong>stack pointer</strong> (contained in “marker” register) tells us where we are in the stack ⇒ no cleanup required</li>
+</ul>
+<p>Stack can <strong>grow up</strong> or <strong>grow down</strong> depending on architecture</p>
+<p>Has a <strong>limited size</strong>. Can be 1MB or 8MB (g++/clang for Unix)</p>
+<h3 id="stack-overflow">
+  Stack Overflow
+  <a class="heading-link" href="#stack-overflow">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Means <strong>all stack memory</strong> has been allocated ⇒ overflows into other sections of memory</p>
+<p>Can happen as a result of <strong>allocating too many variables</strong>, or <strong>recursive function calls</strong>.</p>
+<h3 id="stack-frames">
+  Stack Frames
+  <a class="heading-link" href="#stack-frames">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Keeps track of <strong>all data</strong> associated with a <strong>function call.</strong> Consists of:</p>
+<ol>
+<li><strong>return address</strong> (instruction beyond function call)</li>
+<li><strong>function arguments</strong></li>
+<li><strong>local variables</strong></li>
+<li>saved <strong>copies of registers</strong> that need to be restored</li>
+</ol>
+<p>When this is <strong>popped</strong> off the stack:</p>
+<ol>
+<li><strong>Registers restored</strong> from call stack</li>
+<li><strong>stack frame popped</strong> off top</li>
+<li><strong>return value</strong> handled and CPU resumes exection at this address</li>
+</ol>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: Why is stack faster than heap?</strong></em></p>
+<!-- raw HTML omitted -->
+<ul>
+<li><strong>Pushing</strong> <strong>to stack</strong> is faster (allocator doesn’t have to search for new place to put data, always at the top of the stack)</li>
+<li><strong>Allocating on heap</strong> is more work (must find big enough space, perform bookkeping to prepare for next allocation)</li>
+<li><strong>Accessing data on heap</strong> is <strong>slower</strong> (must follow pointer). On stack, data is close to other data so processor can do its job faster</li>
+</ul>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: How do threads interract with stack/heap?</strong></em></p>
+<!-- raw HTML omitted -->
+<p>Threads share <strong>all segments except the stack</strong>. (Data, Bss, Code, Heap)</p>
+<p>Threads have <strong>independent call stacks</strong>, but memory in other threads’ stacks is <strong>still accessible</strong></p>
+<h1 id="virtual-memory">
+  Virtual Memory
+  <a class="heading-link" href="#virtual-memory">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>Solves <strong>three problems:</strong></p>
+<ol>
+<li>Not enough memory</li>
+<li>Memory fragmentation</li>
+<li>Security</li>
+</ol>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: What actually is a CPU register?</strong></em></p>
+<!-- raw HTML omitted -->
+<p><strong>Temporary storage</strong> for quick processing. Might hold <strong>instruction, address,</strong> or <strong>data.</strong></p>
+<p>Composed of <strong>multiple flip-flops</strong> (logic circuits that can be 0 or 1, maintain state until trigger is received)</p>
+
+  </article>
+</section>
+
+  
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2024
+     Benjamin Schwartz 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.js"></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

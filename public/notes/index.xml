@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Notes on Benjamin Schwartz</title>
+    <link>http://localhost:1313/notes/</link>
+    <description>Recent content in Notes on Benjamin Schwartz</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 09 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43; Notes</title>
+      <link>http://localhost:1313/notes/cpp/</link>
+      <pubDate>Thu, 05 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/notes/cpp/</guid>
+      <description>Table of Contents Link to heading Type Deduction Template Type Deduction Array Arguments Function Arguments auto Type Deduction Value Categories Reference Types Forwarding References const Qualifier constexpr vs const static Keyword Casting std::move Concurrency Threading with std::thread When to Use join() std::thread with a Lambda Multiple Threads Using std::jthread Preventing Data Races and std::mutex Preventing Deadlock with std::lock_guard Using std::atomic to Update a Shared Value The Compiler Compilation Unit Memory Management Static vs Dynamic memory Pointers vs References Smart pointers std::shared_ptr std::unique_ptr Classes What is the vtable ?</description>
+    </item>
+    <item>
+      <title>OS Notes</title>
+      <link>http://localhost:1313/notes/os/</link>
+      <pubDate>Mon, 09 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/notes/os/</guid>
+      <description>Table of Contents Link to heading The Stack &amp;amp; The Heap The Heap The Stack Stack Overflow Stack Frames Virtual Memory The Stack &amp;amp; The Heap Link to heading A program uses memory that is divided into five main segments:&#xA;code segment (compiled code, is read-only) bss segment (zero-initialised global and static variables) data segment (initialised global and static variables) heap (dynamically allocated variables) stack (local variables, stack frames incl.</description>
+    </item>
+  </channel>
+</rss>

@@ -4,6 +4,7 @@ description = "Benjamin Schwartz's C++ Notes"
 date = "2024-09-05"
 aliases = ["cpp"]
 author = "Benjamin Schwartz"
+weight = 1
 +++
 
 ## Table of Contents
