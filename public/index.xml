@@ -6,7 +6,7 @@
     <description>Recent content on Benjamin Schwartz</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 09 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 14 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>C&#43;&#43; Notes</title>
@@ -20,7 +20,14 @@
       <link>http://localhost:1313/notes/os/</link>
       <pubDate>Mon, 09 Sep 2024 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/notes/os/</guid>
-      <description>Table of Contents Link to heading The Stack &amp;amp; The Heap The Heap The Stack Stack Overflow Stack Frames Virtual Memory The Stack &amp;amp; The Heap Link to heading A program uses memory that is divided into five main segments:&#xA;code segment (compiled code, is read-only) bss segment (zero-initialised global and static variables) data segment (initialised global and static variables) heap (dynamically allocated variables) stack (local variables, stack frames incl.</description>
+      <description>Table of Contents Link to heading The Stack &amp;amp; The Heap The Heap The Stack Stack Overflow Stack Frames Virtual Memory Not Enough Memory Memory Fragmentation Security Physical Memory Implementation Page Table Mapping Translation Lookaside Buffer (TLB) Memory Management Unit (MMU) Multi-level Page Tables The Stack &amp;amp; The Heap Link to heading A program uses memory that is divided into five main segments:&#xA;code segment (compiled code, is read-only) bss segment (zero-initialised global and static variables) data segment (initialised global and static variables) heap (dynamically allocated variables) stack (local variables, stack frames incl.</description>
+    </item>
+    <item>
+      <title>System Design Notes</title>
+      <link>http://localhost:1313/notes/sd/</link>
+      <pubDate>Sat, 14 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/notes/sd/</guid>
+      <description>Alex Xu - System Design Interview&#xA;Chapter 1 Link to heading Web Tier Link to heading DNS: Domain Name system ⇒ paid service provided by 3rd parties. Request: domain name, response: IP address HTTP: Format by which requests are sent between client and server Web server might respond with HTML pages or JSON response Mobile Application vs. Web Application Makes up the traffic to our web server Web app: uses server-side languages for business logic (Java, Python, etc.</description>
     </item>
     <item>
       <title>About</title>

@@ -164,7 +164,22 @@
 </li>
 </ul>
 </li>
-<li><a href="#virtual-memory" >Virtual Memory</a></li>
+<li><a href="#virtual-memory" >Virtual Memory</a>
+<ul>
+<li><a href="#not-enough-memory" >Not Enough Memory</a></li>
+<li><a href="#memory-fragmentation" >Memory Fragmentation</a></li>
+<li><a href="#security" >Security</a></li>
+<li><a href="#physical-memory" >Physical Memory</a></li>
+<li><a href="#implementation" >Implementation</a>
+<ul>
+<li><a href="#page-table-mapping" >Page Table Mapping</a></li>
+<li><a href="#translation-lookaside-buffer-%28tlb%29" >Translation Lookaside Buffer (TLB)</a></li>
+<li><a href="#memory-management-unit-%28mmu%29" >Memory Management Unit (MMU)</a></li>
+<li><a href="#multi-level-page-tables" >Multi-level Page Tables</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <h1 id="the-stack--the-heap">
   The Stack &amp; The Heap
@@ -261,17 +276,166 @@
     <span class="sr-only">Link to heading</span>
   </a>
 </h1>
-<p>Solves <strong>three problems:</strong></p>
-<ol>
-<li>Not enough memory</li>
-<li>Memory fragmentation</li>
-<li>Security</li>
-</ol>
+<p><a href="https://www.youtube.com/watch?v=A9WLYbE0p-I"  class="external-link" target="_blank" rel="noopener">Tech With Nikola</a></p>
+<p><em><strong>Solution:</strong> Give <strong>each program</strong> its <strong>own memory space.</strong></em> We need a mapping from “virtual” address space to “physical” address space.</p>
+<h2 id="not-enough-memory">
+  Not Enough Memory
+  <a class="heading-link" href="#not-enough-memory">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>In <strong>old</strong> days, CPU’s could support up to 4GiB of RAM (32-bit registers ⇒ $2^{32} \approx 4$ GiB)</li>
+<li>Modern CPU’s support <strong>64-bit</strong> address space (16 million TiB theoretical limit)</li>
+</ul>
 <!-- raw HTML omitted -->
 <p><em><strong>Q: What actually is a CPU register?</strong></em></p>
 <!-- raw HTML omitted -->
 <p><strong>Temporary storage</strong> for quick processing. Might hold <strong>instruction, address,</strong> or <strong>data.</strong></p>
 <p>Composed of <strong>multiple flip-flops</strong> (logic circuits that can be 0 or 1, maintain state until trigger is received)</p>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>When a program <strong>tries to access more data than can fit on ram</strong>, virtual memory allows the <strong>disk</strong> to be used ⇒ <strong>“SWAP Memory”</strong></li>
+<li>OS automatically moves <strong>oldest data</strong> to disk, and then moves the <strong>accessed data</strong> to RAM, and updates the mapping ⇒ “<strong>Page Fault”</strong> (not ideal, quite slow. Therefore, more RAM is better)</li>
+</ul>
+<h2 id="memory-fragmentation">
+  Memory Fragmentation
+  <a class="heading-link" href="#memory-fragmentation">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Memory gets <strong>split</strong> in such a way that <strong>we can’t allocate memory to programs</strong> (even if we had enough)</li>
+<li><strong>virtual memory</strong> provides a layer of <strong>indirection</strong> which allows us to split a program’s memory across separate areas in RAM</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>From programs POV, nothing has changed ⇒ address space is contiguous</li>
+</ul>
+<h2 id="security">
+  Security
+  <a class="heading-link" href="#security">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Two programs trying to access the same memory, <strong>corrupting</strong> each others <strong>data</strong></li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Both programs have their <strong>own virtual memory address space</strong>, each mapped to <strong>different physical locations</strong>.</li>
+<li>Sometimes, programs may want to <strong>share data</strong>. Fix: have parts of program <strong>map to the same physical space</strong> (e.g. reading the <strong>same shared library</strong>, read the same memory in RAM)</li>
+</ul>
+<h2 id="physical-memory">
+  Physical Memory
+  <a class="heading-link" href="#physical-memory">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Basically <strong>refers to RAM</strong> (but RAM makes up only <strong>part</strong> of the physical address space)</li>
+<li>BUT… RAM is <strong>not the only physical device</strong> that CPU can access
+<ul>
+<li><strong>MMIO/PMIO</strong> Devices are mapped to physical memory</li>
+</ul>
+</li>
+<li>Part of <strong>RAM</strong> is <strong>reserved for OS</strong> at boot, the rest is used by programs</li>
+</ul>
+<h2 id="implementation">
+  Implementation
+  <a class="heading-link" href="#implementation">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Mapping from virtual to physical address is done with a <strong>page table.</strong>
+<ul>
+<li><strong>EACH PROGRAM</strong> has its own <strong>Page table</strong></li>
+</ul>
+</li>
+<li><strong>Physical and virtual</strong> memory is divided into <strong>4KiB</strong> chunks called <strong>pages</strong> ⇒ map pages rather than addresses</li>
+<li><strong>Page table</strong> contains <strong>Page table entries (PTE’s).</strong>
+<ul>
+<li>1 PTE per 4KiB of memory ⇒ about 1 million PTE’s ⇒ 4MiB per Page Table (each entry 4B)</li>
+</ul>
+</li>
+<li>Must move <strong>4KiB</strong> of data, but nearby addresses are often accessed at the same time</li>
+</ul>
+<h3 id="page-table-mapping">
+  Page Table Mapping
+  <a class="heading-link" href="#page-table-mapping">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li><strong>offset</strong> is calculated by subtracting the <strong>start address of virtual page</strong>
+<ul>
+<li>same offset is used to calculate the physical address. <strong>Last 12 bits are the same</strong></li>
+<li>remaining <strong>20 bits</strong> are retrieved from the <strong>page table</strong> (Virtual Pg # ⇒ Physical Pg #)</li>
+</ul>
+</li>
+<li><strong>Page Fault!</strong> ⇒ page table mapping says memory on disk, CPU raises exception
+<ul>
+<li>OS evicts LRU memory from RAM. If <strong>dirty</strong>, OS writes it back to disk (meaning program has <strong>written</strong> something to it <strong>after loading it from disk</strong>), otherwise no need to write</li>
+<li>OS then loads correct one from disk</li>
+<li>Is <strong>very slow</strong>, OS will probably switch to another program in the meantime
+<ul>
+<li><strong>DMA</strong> can do this loading while CPU is doing something else</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+<p><em><strong>Q: Where is the page table located in memory?</strong></em></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>Any process has a memory map divided into <strong>user space</strong> and <strong>kernel space.</strong> RAM itself can be logically divided into kernel/user space.</li>
+<li>Page table is in <strong>kernel space.</strong> Physically, it is in RAM and is the <strong>same space for all processes</strong>. Note: <strong>user space</strong> is <strong>unique</strong> to each process.</li>
+</ul>
+<h3 id="translation-lookaside-buffer-tlb">
+  Translation Lookaside Buffer (TLB)
+  <a class="heading-link" href="#translation-lookaside-buffer-tlb">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>very <strong>small</strong> and <strong>fast cache</strong> ⇒ allows us to find physical address very quickly</li>
+<li>Hit time &lt; 1 cycle, typically 4096 entries. Miss penalty: 10 to 100 cycles</li>
+<li>Modern CPU’s have <strong>two TLB’s ⇒</strong> 1 for <strong>instructions,</strong> 1 for <strong>data</strong>. Typically 2 levels of TLB caching</li>
+<li>if TLB <strong>full</strong>, <strong>remove LRU entry</strong> (and load new entry)</li>
+</ul>
+<h3 id="memory-management-unit-mmu">
+  Memory Management Unit (MMU)
+  <a class="heading-link" href="#memory-management-unit-mmu">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Responsible for <strong>address translation</strong> and <strong>generating page faults</strong></li>
+<li>Usually on CPU board and programmed by OS</li>
+</ul>
+<h3 id="multi-level-page-tables">
+  Multi-level Page Tables
+  <a class="heading-link" href="#multi-level-page-tables">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>2 or more levels of page tables. <strong>Technique to save space</strong></li>
+<li>Reduces memory wastage for storing page tables ⇒ <strong>only the outermost table</strong> will reside in <strong>main memory</strong>. Other page tables will be brought to the main memory <strong>as needed</strong> (can be swapped to disk).</li>
+<li>Virtual address <strong>gets divided</strong> into sections, and each section indexes into a different page table. The result is then added together with the offset</li>
+<li><strong>linux</strong> uses <strong>5-Level Page tables</strong></li>
+</ul>
 
   </article>
 </section>
