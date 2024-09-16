@@ -68,6 +68,8 @@ Want to move **session data** from **web tier** to **data store**
     - Simpler, more robust, scalable
 - **Stateful:** Remebers client data from one request to the next. Each HTTP request must be routed to the **same server as last time**
 
+![webserver](/images/webserver.png)
+
 ## Data Centers
 
 - Separate **web servers, databases, and caches** into their own datacentres. However, they refer to the same **statless DB for user sessions**
