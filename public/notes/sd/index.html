@@ -187,12 +187,37 @@
 <li><a href="#1.-understand-problem-and-establish-design-scope-%283-10mins%29" >1. Understand problem and establish design scope (3-10mins)</a></li>
 <li><a href="#2.-propose-high-level-design-and-get-buy-in-%2810-15mins%29" >2. Propose high-level design and get buy-in (10-15mins)</a></li>
 <li><a href="#3.-design-deep-dive-%2810-25mins%29" >3. Design Deep Dive (10-25mins)</a></li>
-<li><a href="#3.-wrap-up-%283-5mins%29" >3. Wrap up (3-5mins)</a></li>
+<li><a href="#4.-wrap-up-%283-5mins%29" >4. Wrap up (3-5mins)</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a href="#rate-limiter" >Rate Limiter</a>
+<ul>
+<li><a href="#high-level-architecture" >High-level Architecture</a></li>
 </ul>
+</li>
+<li><a href="#design-a-news-feed-system" >Design a News Feed System</a>
+<ul>
+<li><a href="#design-proposal" >Design Proposal</a>
+<ul>
+<li><a href="#feed-publishing-api" >Feed Publishing API</a></li>
+<li><a href="#newsfeed-retrieval-api" >Newsfeed Retrieval API</a></li>
+<li><a href="#feed-publishing-features" >Feed Publishing Features</a></li>
+<li><a href="#feed-publishing-features" >Feed Publishing Features</a></li>
+</ul>
+</li>
+<li><a href="#deep-dive" >Deep Dive</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="system-design">
+  System Design
+  <a class="heading-link" href="#system-design">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
 <p><a href="https://www.amazon.com.au/System-Design-Interview-insiders-Second/dp/B08CMF2CQF"  class="external-link" target="_blank" rel="noopener">Alex Xu - System Design Interview</a></p>
 <h1 id="chapter-1">
   Chapter 1
@@ -399,6 +424,7 @@ Stateless server:</strong></em> Keeps <strong>no state information</strong>. All
 </ul>
 </li>
 </ul>
+<p><img src="/images/webserver2.png" alt="webserver2"></p>
 <h2 id="summary-of-scaling-up">
   Summary of Scaling Up
   <a class="heading-link" href="#summary-of-scaling-up">
@@ -416,7 +442,6 @@ Stateless server:</strong></em> Keeps <strong>no state information</strong>. All
 <li>Split tiers into individual services</li>
 <li>Monitor system and automation tools</li>
 </ul>
-<p><img src="/images/webserver2.png" alt="webserver2"></p>
 <h1 id="chapter-2">
   Chapter 2
   <a class="heading-link" href="#chapter-2">
@@ -574,9 +599,9 @@ Stateless server:</strong></em> Keeps <strong>no state information</strong>. All
 <ul>
 <li>Interviewer may identify component to prioritize (e.g. how to reduce latency)</li>
 </ul>
-<h3 id="3-wrap-up-3-5mins">
-  3. Wrap up (3-5mins)
-  <a class="heading-link" href="#3-wrap-up-3-5mins">
+<h3 id="4-wrap-up-3-5mins">
+  4. Wrap up (3-5mins)
+  <a class="heading-link" href="#4-wrap-up-3-5mins">
     <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
     <span class="sr-only">Link to heading</span>
   </a>
@@ -588,6 +613,140 @@ Stateless server:</strong></em> Keeps <strong>no state information</strong>. All
 <li>Operation issues → monitor metrics/error logs</li>
 <li>Scale up, what changes needed?</li>
 </ul>
+<h1 id="rate-limiter">
+  Rate Limiter
+  <a class="heading-link" href="#rate-limiter">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<ul>
+<li>Limits HTTP requests from a given client to a certain threshold
+<ul>
+<li>Prevents DoS attacks, reduces cost (fewer servers needed), prevent overworking</li>
+</ul>
+</li>
+<li><strong>middleware:</strong> “software glue”. Could place the rate limiter between client and API servers</li>
+<li>Can be handled by a component called <strong>API Gateway</strong> (supports rate limiting, SSL termination, authentication, IP whitelisting, servicing static conent) ⇒ <strong>microservice architecture</strong>
+<ul>
+<li>Implementing on server-side gives full control</li>
+</ul>
+</li>
+<li><strong>Rate limiting algorithms:</strong>
+<ul>
+<li><strong>token bucket:</strong> Tokens represent <strong>amount of requests we can service.</strong>
+<ul>
+<li>Bucket is refilled at a preset rate. Bucket has fixed capacity. Once full, no more tokens are added. Every request consumes a token, and once empty request is dropped.</li>
+<li>Parameters: <strong>bucket size, refill rate</strong></li>
+<li>Might have one bucket per IP address, or a global bucket</li>
+</ul>
+</li>
+<li><strong>leaking bucket:</strong> implement with FIFO queue, requests dropped if queue full</li>
+<li><strong>fixed window counter:</strong> counter for each time window, drops requests once exceeds
+<ul>
+<li>spike in traffic at edge of a window could cause more requests than allowed to go through</li>
+</ul>
+</li>
+<li><strong>sliding window log:</strong> fixes previous issue.
+<ul>
+<li>Each request has a <strong>timestamp.</strong> When a new request comes in, remove old requests (time outside of window). If log size exceeds limit, drop request, otherwise process it.</li>
+</ul>
+</li>
+<li><strong>sliding window counter:</strong> complicated hybrid of fixd window and sliding window</li>
+</ul>
+</li>
+</ul>
+<h3 id="high-level-architecture">
+  High-level Architecture
+  <a class="heading-link" href="#high-level-architecture">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>For counter, <strong>in-memory</strong> <strong>cache</strong> will be much faster than a database (disk is slow)
+<ul>
+<li><strong>Redis</strong> for rate limiting: INCR/EXPIRE</li>
+</ul>
+</li>
+</ul>
+<h1 id="design-a-news-feed-system">
+  Design a News Feed System
+  <a class="heading-link" href="#design-a-news-feed-system">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<ul>
+<li>Constantly updating list of stories</li>
+<li><strong>Facebook</strong>: Includes status updates, photos, videos, links, app activity, and likes from people, pages and groups you follow</li>
+</ul>
+<h2 id="design-proposal">
+  Design Proposal
+  <a class="heading-link" href="#design-proposal">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Two flows: <strong>feed publishing</strong> (user publishes post, write data to cache and DB, post populated to friends’ news feeds) **** and <strong>feed building</strong> (aggregate friends’ posts in reverse chronological)</li>
+</ul>
+<h3 id="feed-publishing-api">
+  Feed Publishing API
+  <a class="heading-link" href="#feed-publishing-api">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>HTTP <strong>POST</strong> request: POST/v1/me/feed. <strong>params:</strong> content, auth_token (authenticate API requests)</li>
+</ul>
+<h3 id="newsfeed-retrieval-api">
+  Newsfeed Retrieval API
+  <a class="heading-link" href="#newsfeed-retrieval-api">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>HTTP <strong>GET</strong> request: GET/v1/me/feed. <strong>params:</strong> auth_token</li>
+</ul>
+<h3 id="feed-publishing-features">
+  Feed Publishing Features
+  <a class="heading-link" href="#feed-publishing-features">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Load balancer</li>
+<li>Web servers</li>
+<li>Post service (persist post in DB and <strong>post cache</strong>)</li>
+<li>Fanout service (push content to friends’ news feed, this data stored in <strong>news feed cache</strong> for fast retrieval)</li>
+<li>Notification service (inform friends that new content available, send push notification)</li>
+</ul>
+<p><img src="/images/feedpublisher.png" alt="feedpublisher"></p>
+<h3 id="newsfeed-building-features">
+  Newsfeed Building Features
+  <a class="heading-link" href="#newsfeed-building-features">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Load balancer</li>
+<li>Web servers</li>
+<li>Newsfeed service (fetches from <strong>news feed cache</strong>)</li>
+<li><strong>Newsfeed cache</strong> (stores news feed IDs needed to render news feed)</li>
+</ul>
+<p><img src="/images/feedbuilder.png" alt="feedbuilder"></p>
+<h2 id="deep-dive">
+  Deep Dive
+  <a class="heading-link" href="#deep-dive">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
 
   </article>
 </section>

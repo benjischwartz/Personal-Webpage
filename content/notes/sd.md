@@ -29,7 +29,18 @@ weight = 3
     - [1. Understand problem and establish design scope (3-10mins)](#1.-understand-problem-and-establish-design-scope-(3-10mins))
     - [2. Propose high-level design and get buy-in (10-15mins)](#2.-propose-high-level-design-and-get-buy-in-(10-15mins))
     - [3. Design Deep Dive (10-25mins)](#3.-design-deep-dive-(10-25mins))
-    - [3. Wrap up (3-5mins)](#3.-wrap-up-(3-5mins))
+    - [4. Wrap up (3-5mins)](#4.-wrap-up-(3-5mins))
+- [Rate Limiter](#rate-limiter)
+    - [High-level Architecture](#high-level-architecture)
+- [Design a News Feed System](#design-a-news-feed-system)
+  - [Design Proposal](#design-proposal)
+    - [Feed Publishing API](#feed-publishing-api)
+    - [Newsfeed Retrieval API](#newsfeed-retrieval-api)
+    - [Feed Publishing Features](#feed-publishing-features)
+    - [Feed Publishing Features](#feed-publishing-features)
+  - [Deep Dive](#deep-dive)
+
+# System Design
 
 [Alex Xu - System Design Interview](https://www.amazon.com.au/System-Design-Interview-insiders-Second/dp/B08CMF2CQF)
 
@@ -139,6 +150,8 @@ Stateless server:*** Keeps **no state information**. All of this is stored in a 
     - **celebrity** problem (certain shard swamped with accesses ⇒ social applications)
     - **join and de-normalization** ⇒ hard to perform joins across shards
         
+![webserver2](/images/webserver2.png)
+
 ## Summary of Scaling Up
 
 - Stateless web tier (move state to shared DB)
@@ -149,8 +162,6 @@ Stateless server:*** Keeps **no state information**. All of this is stored in a 
 - Scale DB’s by sharding
 - Split tiers into individual services
 - Monitor system and automation tools
-
-![webserver2](/images/webserver2.png)
 
 # Chapter 2
 
@@ -214,11 +225,74 @@ Stateless server:*** Keeps **no state information**. All of this is stored in a 
 
 - Interviewer may identify component to prioritize (e.g. how to reduce latency)
 
-### 3. Wrap up (3-5mins)
+### 4. Wrap up (3-5mins)
 
 - Discuss potential improvements
 - Give a recap of the design
 - Error cases are interesting
 - Operation issues → monitor metrics/error logs
 - Scale up, what changes needed?
+
+# Rate Limiter
+
+- Limits HTTP requests from a given client to a certain threshold
+    - Prevents DoS attacks, reduces cost (fewer servers needed), prevent overworking
+- **middleware:** “software glue”. Could place the rate limiter between client and API servers
+- Can be handled by a component called **API Gateway** (supports rate limiting, SSL termination, authentication, IP whitelisting, servicing static conent) ⇒ **microservice architecture**
+    - Implementing on server-side gives full control
+- **Rate limiting algorithms:**
+    - **token bucket:** Tokens represent **amount of requests we can service.**
+        - Bucket is refilled at a preset rate. Bucket has fixed capacity. Once full, no more tokens are added. Every request consumes a token, and once empty request is dropped.
+        - Parameters: **bucket size, refill rate**
+        - Might have one bucket per IP address, or a global bucket
+    - **leaking bucket:** implement with FIFO queue, requests dropped if queue full
+    - **fixed window counter:** counter for each time window, drops requests once exceeds
+        - spike in traffic at edge of a window could cause more requests than allowed to go through
+    - **sliding window log:** fixes previous issue.
+        - Each request has a **timestamp.** When a new request comes in, remove old requests (time outside of window). If log size exceeds limit, drop request, otherwise process it.
+    - **sliding window counter:** complicated hybrid of fixd window and sliding window
+
+### High-level Architecture
+
+- For counter, **in-memory** **cache** will be much faster than a database (disk is slow)
+    - **Redis** for rate limiting: INCR/EXPIRE
+
+# Design a News Feed System
+
+- Constantly updating list of stories
+- **Facebook**: Includes status updates, photos, videos, links, app activity, and likes from people, pages and groups you follow
+
+## Design Proposal
+
+- Two flows: **feed publishing** (user publishes post, write data to cache and DB, post populated to friends’ news feeds) **** and **feed building** (aggregate friends’ posts in reverse chronological)
+
+### Feed Publishing API
+
+- HTTP **POST** request: POST/v1/me/feed. **params:** content, auth_token (authenticate API requests)
+
+### Newsfeed Retrieval API
+
+- HTTP **GET** request: GET/v1/me/feed. **params:** auth_token
+
+### Feed Publishing Features
+
+- Load balancer
+- Web servers
+- Post service (persist post in DB and **post cache**)
+- Fanout service (push content to friends’ news feed, this data stored in **news feed cache** for fast retrieval)
+- Notification service (inform friends that new content available, send push notification)
+    
+![feedpublisher](/images/feedpublisher.png)
+    
+
+### Newsfeed Building Features
+
+- Load balancer
+- Web servers
+- Newsfeed service (fetches from **news feed cache**)
+- **Newsfeed cache** (stores news feed IDs needed to render news feed)
+    
+![feedbuilder](/images/feedbuilder.png)
+
+## Deep Dive
 
