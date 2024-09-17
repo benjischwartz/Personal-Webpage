@@ -145,7 +145,55 @@
       </h1>
     </header>
 
-    <p><a href="https://www.amazon.com.au/System-Design-Interview-insiders-Second/dp/B08CMF2CQF"  class="external-link" target="_blank" rel="noopener">Alex Xu - System Design Interview</a></p>
+    <h2 id="table-of-contents">
+  Table of Contents
+  <a class="heading-link" href="#table-of-contents">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="#chapter-1" >Chapter 1</a>
+<ul>
+<li><a href="#web-tier" >Web Tier</a></li>
+<li><a href="#data-tier" >Data Tier</a></li>
+<li><a href="#cache-tier" >Cache Tier</a>
+<ul>
+<li><a href="#content-delivery-network-%28cdn%29" >Content delivery network (CDN)</a></li>
+</ul>
+</li>
+<li><a href="#statefless-vs-stateful-architecture" >Statefless vs Stateful Architecture</a></li>
+<li><a href="#data-centers" >Data Centers</a></li>
+<li><a href="#message-queue" >Message Queue</a></li>
+<li><a href="#logging,-metrics,-automation" >Logging, Metrics, Automation</a></li>
+<li><a href="#vertical-vs.-horizontal-scaling" >Vertical vs. Horizontal Scaling</a>
+<ul>
+<li><a href="#sharding-for-scaling-databases" >Sharding for scaling Databases</a></li>
+</ul>
+</li>
+<li><a href="#summary-of-scaling-up" >Summary of Scaling Up</a></li>
+</ul>
+</li>
+<li><a href="#chapter-2" >Chapter 2</a>
+<ul>
+<li><a href="#useful-latency-numbers" >Useful Latency Numbers</a></li>
+<li><a href="#back-of-the-envelope-estimations" >Back-of-the-envelope Estimations</a>
+<ul>
+<li><a href="#twitter-example" >Twitter Example</a></li>
+</ul>
+</li>
+<li><a href="#framework" >Framework</a>
+<ul>
+<li><a href="#1.-understand-problem-and-establish-design-scope-%283-10mins%29" >1. Understand problem and establish design scope (3-10mins)</a></li>
+<li><a href="#2.-propose-high-level-design-and-get-buy-in-%2810-15mins%29" >2. Propose high-level design and get buy-in (10-15mins)</a></li>
+<li><a href="#3.-design-deep-dive-%2810-25mins%29" >3. Design Deep Dive (10-25mins)</a></li>
+<li><a href="#3.-wrap-up-%283-5mins%29" >3. Wrap up (3-5mins)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://www.amazon.com.au/System-Design-Interview-insiders-Second/dp/B08CMF2CQF"  class="external-link" target="_blank" rel="noopener">Alex Xu - System Design Interview</a></p>
 <h1 id="chapter-1">
   Chapter 1
   <a class="heading-link" href="#chapter-1">
@@ -271,10 +319,17 @@
 <li><strong>Stateless:</strong> Want to store state (e.g. session data) in a DB (each webserver can access this). Effectively a <strong>shared data source</strong>
 <ul>
 <li>Simpler, more robust, scalable</li>
+<li>NB: use a <strong>NoSQL</strong> data store as its easy to scale.</li>
 </ul>
 </li>
 <li><strong>Stateful:</strong> Remebers client data from one request to the next. Each HTTP request must be routed to the <strong>same server as last time</strong></li>
 </ul>
+<!-- raw HTML omitted -->
+<p><em><strong>KEY:
+Stateless server:</strong></em> Keeps <strong>no state information</strong>. All of this is stored in a <strong>shared data source</strong></p>
+<p><em><strong>Stateful server:</strong></em> Remebers client data/state (e.g. user session data, user profile image, etc.) from one request to the next</p>
+<p><strong>Stateless</strong> moves the session data <strong>out of the web tier</strong></p>
+<!-- raw HTML omitted -->
 <p><img src="/images/webserver.png" alt="webserver"></p>
 <h2 id="data-centers">
   Data Centers
@@ -296,9 +351,242 @@
   </a>
 </h2>
 <ul>
-<li>Supports <strong>asynchronous communication</strong></li>
+<li><strong>Buffer</strong> which supports <strong>asynchronous communication</strong></li>
 <li>Producers == &gt; Message Queue &lt; == &gt; Consumer</li>
-<li><strong>Buffer</strong> for <strong>asynchronous requests</strong>. Multiple consumers can connect to queue</li>
+<li>Multiple consumers can connect to queue</li>
+</ul>
+<h2 id="logging-metrics-automation">
+  Logging, Metrics, Automation
+  <a class="heading-link" href="#logging-metrics-automation">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>Logging</strong> monitors errors in system</li>
+<li><strong>Metrics</strong> could mean system health (CPU, Memory, disk I/O etc.), aggregated level (e.g. entire DB tier), or business metrics</li>
+<li><strong>Automation</strong> could be CI/CD tools to help productivity</li>
+</ul>
+<h2 id="vertical-vs-horizontal-scaling">
+  Vertical vs. Horizontal Scaling
+  <a class="heading-link" href="#vertical-vs-horizontal-scaling">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>Upper limit</strong> on improving hardware, also very expensive. Increases single point of failure risk</li>
+</ul>
+<h3 id="sharding-for-scaling-databases">
+  Sharding for scaling Databases
+  <a class="heading-link" href="#sharding-for-scaling-databases">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Method of separating databases into smaller pieces
+<ul>
+<li>can use a <strong>hash function</strong> on a <strong>sharding</strong> <strong>key</strong> (like a <code>user_id</code> ) to determine which DB to use ⇒ choose a <strong>sharding key</strong> that evenly distributes data</li>
+<li>Means each <strong>shard</strong> contains <strong>unique data</strong></li>
+</ul>
+</li>
+<li><strong>Problems:</strong>
+<ul>
+<li><strong>resharding data</strong> (uneven data distribution)</li>
+<li><strong>celebrity</strong> problem (certain shard swamped with accesses ⇒ social applications)</li>
+<li><strong>join and de-normalization</strong> ⇒ hard to perform joins across shards</li>
+</ul>
+</li>
+</ul>
+<h2 id="summary-of-scaling-up">
+  Summary of Scaling Up
+  <a class="heading-link" href="#summary-of-scaling-up">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Stateless web tier (move state to shared DB)</li>
+<li>Redundancy at each level (DB replication)</li>
+<li>Cache data wherever possible</li>
+<li>Support multiple data centers (Load balancer distributes requests)</li>
+<li>Host static assets on CDN</li>
+<li>Scale DB’s by sharding</li>
+<li>Split tiers into individual services</li>
+<li>Monitor system and automation tools</li>
+</ul>
+<p><img src="/images/webserver2.png" alt="webserver2"></p>
+<h1 id="chapter-2">
+  Chapter 2
+  <a class="heading-link" href="#chapter-2">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<h2 id="useful-latency-numbers">
+  Useful Latency Numbers
+  <a class="heading-link" href="#useful-latency-numbers">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1 cache reference</td>
+<td>0.5ns</td>
+</tr>
+<tr>
+<td>Branch mispredict</td>
+<td>5ns</td>
+</tr>
+<tr>
+<td>L2 cache reference</td>
+<td>7ns</td>
+</tr>
+<tr>
+<td>Mutex lock/unloc</td>
+<td>100ns</td>
+</tr>
+<tr>
+<td>Main memory reference</td>
+<td>100ns</td>
+</tr>
+<tr>
+<td>Read 1MB sequentially from memory</td>
+<td>250μs</td>
+</tr>
+<tr>
+<td>Round trip within same datacenter</td>
+<td>500μs</td>
+</tr>
+<tr>
+<td>Disk seek</td>
+<td>10ms</td>
+</tr>
+<tr>
+<td>1MB sequentially from network</td>
+<td>10ms</td>
+</tr>
+<tr>
+<td>1MB sequentially from disk</td>
+<td>30ms</td>
+</tr>
+<tr>
+<td>Pack from CA → Netherlands → CA</td>
+<td>150ms</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Disk seeks very slow, simple compression is fast, compress data before sending</li>
+</ul>
+<h2 id="back-of-the-envelope-estimations">
+  Back-of-the-envelope Estimations
+  <a class="heading-link" href="#back-of-the-envelope-estimations">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>Common estimations:</strong> QPS (Queries per second, peak QPS, storage, cache, number of servers, etc.)</li>
+</ul>
+<h3 id="twitter-example">
+  Twitter Example
+  <a class="heading-link" href="#twitter-example">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p><strong>Estimate QPS and Storage requirements</strong></p>
+<ul>
+<li>Assumptions:
+<ul>
+<li>300 millions monthly active users</li>
+<li>50% use daily</li>
+<li>Users post 2 tweets/day average</li>
+<li>10% data contains media</li>
+<li>Data stored for 5 years</li>
+<li>Average tweet size: 64B tweet_id, 140B content, 1MB media</li>
+</ul>
+</li>
+<li><strong>QPS</strong>: 150M * 2 / 24 / 3600 = 3500 QPS</li>
+<li>Peak QPS = 2 * QPS = 7000</li>
+<li><strong>Media storage:</strong>
+<ul>
+<li>150M * 2 * 10% * 1MB = 30TB /day</li>
+<li>30TB * 365 * 5 = 55PB / year</li>
+</ul>
+</li>
+</ul>
+<h2 id="framework">
+  Framework
+  <a class="heading-link" href="#framework">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<h3 id="1-understand-problem-and-establish-design-scope-3-10mins">
+  1. Understand problem and establish design scope (3-10mins)
+  <a class="heading-link" href="#1-understand-problem-and-establish-design-scope-3-10mins">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>slow down and think deeply</li>
+<li>ask questions to clarify requirements and assumptions
+<ul>
+<li>what specific features are we going to build?</li>
+<li>how many users does the product have?</li>
+<li>how fast is the anticipated scale up?</li>
+<li>what is the tech stack? what existing services to simplify design?</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-propose-high-level-design-and-get-buy-in-10-15mins">
+  2. Propose high-level design and get buy-in (10-15mins)
+  <a class="heading-link" href="#2-propose-high-level-design-and-get-buy-in-10-15mins">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>create initial blueprint. Ask for feedback</li>
+<li>use box diagrams with key components</li>
+<li>back-of-the-envelope calculations, think out loud</li>
+<li>think through some concrete cases. Get areas to focus on in deep dive</li>
+</ul>
+<h3 id="3-design-deep-dive-10-25mins">
+  3. Design Deep Dive (10-25mins)
+  <a class="heading-link" href="#3-design-deep-dive-10-25mins">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Interviewer may identify component to prioritize (e.g. how to reduce latency)</li>
+</ul>
+<h3 id="3-wrap-up-3-5mins">
+  3. Wrap up (3-5mins)
+  <a class="heading-link" href="#3-wrap-up-3-5mins">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Discuss potential improvements</li>
+<li>Give a recap of the design</li>
+<li>Error cases are interesting</li>
+<li>Operation issues → monitor metrics/error logs</li>
+<li>Scale up, what changes needed?</li>
 </ul>
 
   </article>

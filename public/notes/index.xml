@@ -27,7 +27,7 @@
       <link>http://localhost:1313/notes/sd/</link>
       <pubDate>Sat, 14 Sep 2024 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/notes/sd/</guid>
-      <description>Alex Xu - System Design Interview&#xA;Chapter 1 Link to heading Web Tier Link to heading DNS: Domain Name system ⇒ paid service provided by 3rd parties. Request: domain name, response: IP address HTTP: Format by which requests are sent between client and server Web server might respond with HTML pages or JSON response Mobile Application vs. Web Application Makes up the traffic to our web server Web app: uses server-side languages for business logic (Java, Python, etc.</description>
+      <description>Table of Contents Link to heading Chapter 1 Web Tier Data Tier Cache Tier Content delivery network (CDN) Statefless vs Stateful Architecture Data Centers Message Queue Logging, Metrics, Automation Vertical vs. Horizontal Scaling Sharding for scaling Databases Summary of Scaling Up Chapter 2 Useful Latency Numbers Back-of-the-envelope Estimations Twitter Example Framework 1. Understand problem and establish design scope (3-10mins) 2. Propose high-level design and get buy-in (10-15mins) 3. Design Deep Dive (10-25mins) 3.</description>
     </item>
   </channel>
 </rss>
