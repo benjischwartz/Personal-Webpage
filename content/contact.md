@@ -6,5 +6,5 @@ aliases = ["about-me"]
 author = "Benjamin Schwartz"
 +++
 
-Feel free to contact me at [Benjamin.JohnJozef.Schwartz@gmail.com](mailto:benjamin.johnjozef.schwartz@gmail.com).
+Feel free to contact me at [benji.schwartz2013@gmail.com](mailto:benji.schwartz2013@gmail.com).
 
