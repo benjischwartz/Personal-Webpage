@@ -52,10 +52,15 @@ style = "github-dark"
   weight = 2
   url = "https://LinkedIn.com/in/benjaminjschwartz/"
 [[params.social]]
-  name = "File"
-  icon = "fa-solid fa-file fa-2x"
+  name = "CV"
+  icon = "/images/cv-icon.png"
   weight = 3
   url = "https://drive.google.com/file/d/1WfI-IznNBwUbZOG3TQgfSZtf_xnPIRJi/view?usp=sharing"
+[[params.social]]
+  name = "Transcript"
+  icon = "/images/mortarboard.png"
+  weight = 4 
+  url = "https://drive.google.com/file/d/1oknQMVdrByhYE95pSkTbIWkkh6RAxOEi/view?usp=drive_link"
 
 # Menu links
 [[menu.main]]

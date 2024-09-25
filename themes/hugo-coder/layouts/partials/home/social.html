@@ -1,17 +1,22 @@
 {{ with .Site.Params.social }}
 <ul>
   {{ range sort . "weight" }}
-    {{ if .icon }}
-      <li>
-        <a href="{{ .url | safeURL }}" aria-label="{{ .name }}" {{ if .rel }}rel="{{ .rel }}"{{ end }} {{ if .target }}target="{{ .target }}"{{ end }} {{ if .type }}type="{{ .type }}"{{ end }}>
-          <i class="{{ .icon }}" aria-hidden="true"></i>
-        </a>
-      </li>
-    {{ else }}
-      <li>
-        <a href="{{ .url | safeURL }}" aria-label="{{ .name }}" {{ if .rel }}rel="{{ .rel }}"{{ end }} {{ if .target }}target="{{ .target }}"{{ end }}>{{ .name }}</a>
-      </li>
-    {{ end }}
+    <li>
+      <a href="{{ .url | safeURL }}" aria-label="{{ .name }}"
+         {{ if .rel }}rel="{{ .rel }}"{{ end }}
+         {{ if .target }}target="{{ .target }}"{{ end }}
+         {{ if .type }}type="{{ .type }}"{{ end }}>
+
+         {{ if (hasPrefix .icon "/") }}
+           <!-- Display image if icon is a path -->
+           <img src="{{ .icon }}" alt="{{ .name }}" style="width:24px;height:24px;">
+         {{ else }}
+           <!-- Display Font Awesome icon -->
+           <i class="{{ .icon }}" aria-hidden="true"></i>
+         {{ end }}
+      </a>
+    </li>
   {{ end }}
 </ul>
 {{ end }}
+

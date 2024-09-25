@@ -6,13 +6,12 @@ aliases = ["about-me"]
 author = "Benjamin Schwartz"
 +++
 
-I am a software engineer and problem solver from Sydney, Australia.
+I'm Benji. I'm a software engineer from Sydney, Australia.
 
-I have graduated with First Class Honours from [University of New South Wales](https://www.unsw.edu.au/), with a Bachelor of Computer Engineering (Hons), and an HD-Average. I was recently awarded the 'Brightest Minds' full scholarship for postgraduate studies at UNSW. My academic work covered many topics in computer science, focussing on both software and hardware design.
+I've just graduated with from [UNSW](https://www.unsw.edu.au/), with a Bachelor of Computer Engineering with First Class Honours, and an HD-Average. I was recently awarded the 'Brightest Minds' full scholarship for postgraduate studies at UNSW. My academic work covered many topics in computer science, focussing on both software and hardware design.
 
-I have recently completed an internship with [IMC Trading](https://www.imc.com/ap/) where I worked in C++ as part of the execution team. I have also worked as Software Engineer for Transpara and managed their CRM platform. I worked as a Data Analytics Intern for [Quantium](https://quantium.com/) and for several years as an academic tutor for the [Lindfield Learning Hub](https://www.lindfieldlearninghub.com.au/). 
+I'm primarily a backend/systems dev. I'm most competent in C++ but am also proficient in Rust, Java, and Go. I've built full-stack applications with Vue.Js. I've done several internships including [IMC Trading](https://www.imc.com/ap/) - working on the trading system's C++ execution framework, and [Quantium](https://quantium.com/) - working as a data analyst in Python and SQL. I've also worked for several years as an academic tutor both privately and for the [Lindfield Learning Hub](https://www.lindfieldlearninghub.com.au/). 
 
-I am interested in many topics including Math, Data Analytics and Networking. I'm experienced with C++, Java, and Go, and recently have been learning Rust as well as front-end development.
+I've also done several side projects include a full-stack editing and visualization tool for CellML models, a rust-based multi-threaded spreadsheet, and a CNN Accelerator on an FPGA. Feel free to check out some of my [projects](/projects), as well as some [topics](/notes) I've been learning about.
 
-Feel free to check out out some of my [projects](/projects), as well as some [topics](/notes) I've been learning about.
-
+I enjoy solving really difficult problems. I'm currently incredibly excited by AI, data science, robotics and infrastructure.
