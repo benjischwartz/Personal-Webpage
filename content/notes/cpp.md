@@ -40,9 +40,31 @@ weight = 1
   - [Smart pointers](#smart-pointers)
     - [`std::shared_ptr`](#`std::shared_ptr`)
     - [`std::unique_ptr`](#`std::unique_ptr`)
+  - [Memory Layout in C++](#memory-layout-in-c++)
+    - [High-Level Summary](#high-level-summary)
+    - [Global Variables](#global-variables)
 - [Classes](#classes)
   - [What is the `vtable` ?](#what-is-the-`vtable`-?)
     - [`__vtbl*` pointer](#`__vtbl*`-pointer)
+  - [Type Erasure](#type-erasure)
+- [Standard Template Library (STL)](#standard-template-library-(stl))
+  - [`std::basic_string`](#`std::basic_string`)
+  - [Containers](#containers)
+  - [Algorithms](#algorithms)
+  - [Iterators](#iterators)
+- [Callables](#callables)
+  - [C++ Lambda vs `std::function` vs Function Pointer](#c++-lambda-vs-`std::function`-vs-function-pointer)
+  - [`std::function`](#`std::function`)
+  - [Function Pointers](#function-pointers)
+- [Templates](#templates)
+  - [Variadic templates](#variadic-templates)
+    - [Recursion](#recursion)
+  - [CRTP - Curiously Recurring Template Pattern](#crtp---curiously-recurring-template-pattern)
+- [Input and Output (I/O)](#input-and-output-(i/o))
+  - [Types of Streams](#types-of-streams)
+  - [String Streams](#string-streams)
+    - [**`std::istringstream` (Input String Stream)**](#**`std::istringstream`-(input-string-stream)**)
+    - [**`std::ostringstream` (Output String Stream)**](#**`std::ostringstream`-(output-string-stream)**)
 
 # Type Deduction
 
@@ -517,7 +539,7 @@ From most safe to least safe:
         - Data registers, stack pointers, program counter
     - But shares **code, data and kernel context**
         - Shared libraries, run-time heap, r/w data, read-only code/data
-        - kernel context: VM structures, descriptor table, brk pointer
+        - kernel context: VM structures (e.g. page table), descriptor table, brk pointer
 - Allows us to execute **multiple control flows** at the same time
 
 ### When to Use
@@ -786,9 +808,46 @@ void another_scope(std::unique_ptr<float>& uptr) {
 - take a reference to `uptr` and we can use `std::move` to **destroy the old `unique_ptr`** (but not the data) and assign the new `pointertime` to the **same data**
 - **address** will stay the same. The **data stays in the same place.**
 
+## Memory Layout in C++
+
+### High-Level Summary
+
+- **key regions**: stack, heap, static/global data segment, code segment
+1. **Compiler** generates object files
+2. **Linker** resolved symbols and creates an executable (internal/external linking)
+3. When program runs, OS loads executable’s machine code into **code segment**, and program starts executing
+
+<aside>
+💡
+
+***Q: Where do things reside when a program runs?***
+
+- Class definitions and member functions: **code segment**
+- Local objects: **stack**
+- Dynamically allocated objects: **heap**
+- Global/static variables: **static/global data segment**
+- Static class members: **static/global data segment**
+- Free functions: **code segment**
+</aside>
+
+- NB: `static` means variable/function is associated with **class itself** and has a **persistent lifetime**. A static variable in function exists for the **entire program’s lifetime** and **retain value** across multiple calls
+- A `static` member function does not have access to `this` (can only access static member variables, and call other static member functions). Also stored in **code segment**.
+- A global variable as `static` limits visibility to file where it is declared
+
+### Global Variables
+
+- accessible from **any code within same program**
+    - assuming no restrictions `static` or `extern`
+- used in any file in which they are **defined** or other files **with proper linkage**
+- stored in **static/global data segment.** Lifetime is **duration of program**.
+- declare as `extern` to tell compiler that it’s **defined in another file**.
+- declare as `static` to make it **file-local** (with same global lifetime)
+
 # Classes
 
 ## What is the `vtable` ?
+
+[Mike Shah Understand the vtable](https://www.youtube.com/watch?v=hS7kPtVB1vI)
 
 - **“virtual table” ⇒** supports **dynamic dispatch**
 - **virtual** keyword creates a **virtual table**
@@ -869,3 +928,318 @@ Derived Constructor called
 Derived destructor called
 Base destructor called
 ```
+
+<aside>
+💡
+
+***Q: Where do member methods go in memory?***
+
+</aside>
+
+- Don’t take up instance space and will likely go in the “code” and “data” portions of memory
+
+## Type Erasure
+
+- can achieve **polymorphism** through **interfaces** or through **templates.**
+
+```cpp
+// Interfaces
+void seeAndSay(Animal *animal) {
+	animal->see();
+	animal->say();
+}
+
+// Templates
+template <typename T>
+void seeAndSay(T *animal) {
+	animal->see();
+	animal->say();
+}
+```
+
+- **template method** can fail when you try to compile with a type that doesn’t have `see` or `say` methods. Also means we can’t store them in an array (no common interface)
+
+**Solution:** create a **wrapper object**  which is an interface, and implement it multiple times. 
+
+- Could have a single implementation for each `Cow`, `Dog`, or `Pig` and calls into that for the virtual methods
+- OR could create a single `AnimalWrapper` template instead of `MyCow`, `MyPig` and `MyDog`
+
+```cpp
+// The interface
+// type erasure CONCEPT we program against internally
+class MyAnimal {
+public:
+	virtual const char* see() const = 0;
+	virtual const char* say() const = 0;
+};
+
+// The derived type(s) 
+// type erasure MODEL (templated wrapper object)
+// implements the concept interface and forwards concept methods to underlying
+template<typename T>
+class AnimalWrapper : public MyAnimal 
+{
+	const T* my_animal;
+	
+public:
+	AnimalWrapper(const T* animal) : m_animal(animal) {};
+	const char *see() const { return m_animal.see(); }
+	const char *say() const { return m_animal.say(); }
+}
+
+// Container
+std::vector<MyAnimal*> animals = {new AnimalWrapper(new Cow()), new AnimalWrapper(new Dog());
+```
+
+- We have **erased** the concrete types of `Cow` , `Pig` and `Dog`
+
+# Standard Template Library (STL)
+
+[Mike Shah STL Overview](https://www.youtube.com/watch?v=Id6ZEb_Lg58)
+
+- many built-in libraries ⇒ many algorithms, most data structures (**stack, queue, array, vector, map**), C++ ref is the bible
+- STL provides a set of standard: **algorithms, containers, functions** and **iterators**
+- Many companies have their **own standard libraries** (GNU, LLVM, NVIDIA, Microsoft, etc.)
+
+## `std::basic_string`
+
+- the usual `std::string` is actually just `std::basic_string<char>`
+- Can specify different type (e.g. wide string: `wstring` is `std::basic_string<wchar_t>`
+- Can create strings for different alphabets
+- **performance:** pass by const reference where possible, often capacity is much larger than the size of the string itself (use `capacity`)
+- 
+
+## Containers
+
+- **“Data Structures”** ⇒ a collection of `<elements>` (can be templated)
+
+## Algorithms
+
+- Operations ****on elements
+- Is also **how you move through data** (informs iterator’s behaviour)
+
+## Iterators
+
+- Abstraction for **accessing containers** in a **sequential / random access** manner
+- Different ways to maneuvour through containers
+- **pair** of iterators makes a **range** (ranges library)
+
+# Callables
+
+## C++ Lambda vs `std::function` vs Function Pointer
+
+[**C++ Weekly - Ep 332 - C++ Lambda vs std::function vs Function Pointer - Jason Turner**](https://www.youtube.com/watch?v=aC-aAiS5Wuc)
+
+- lambdas and `std::function` are **not** equivalent
+
+**Lambda:** 
+
+- language construct for defining an **anonymous function**
+- captureless lambda is implicitly convertible to a function pointer
+
+**Function Pointer**
+
+- can create a **vector of function pointers**
+- **captureless** lambda is **implicitly convertible** to a function pointer
+
+```cpp
+std::vector<int (*)(int, int)> operations;
+
+// pass in a captureless lambda (converted to func pointer)
+operations.emplace_back([](int x, int y){ return x + y; });  
+
+// CAN'T do this (not captureless)
+int val1 = 5;
+operations.emplace_back([=](int x, int y){ return val1 + x - y; });
+
+// pass in a function pointer
+int add(int x, int y) { return x + y; }
+operations.emplace_back(add);  
+```
+
+**`std::function`** 
+
+- type-erased wrapper around a **“callable”**
+- a lot of **extra overhead,** but fixes the above case
+- good in the case where we need **type-erased function** which is callable on **anything** which takes that set of parameters.
+
+```cpp
+int val1 = 5;
+
+std::vector<std::function<int, (int, int)>> operations;
+operations.emplace_back([](int x, int y){ return x + y; });          // OK
+operations.emplace_back([](int x, int y){ return x - y; });          // OK
+operations.emplace_back([=](int x, int y){ return val1 + x - y; });  // OK
+operations.emplace_back(add);                                        // OK
+```
+
+## `std::function`
+
+[Jason Turner a simplified std::function implementation](https://www.youtube.com/watch?v=xJSKk_q25oQ)
+
+- not a lambda, not a function pointer
+- basic interface is it **needs to take some function signature**
+
+<aside>
+💡
+
+***Q: What is partial specialisation?***
+
+- You can specialise a template for a **subset of template parameters**
+- gives custom behaviour for certain types/values, gives more fine-grain control
+</aside>
+
+- We need a **type-erased wrapper** around the callable
+    - We will do this with a `callable_interface` and a `callable_impl : callable_interface` which is templated
+
+<aside>
+💡
+
+***Q: Why???***
+
+- We need to store a `unique_ptr` to a type of `callable_interface` , which has one virtual function which is simply `call`
+- As discussed in **type erasure**, we have a **concept** (defines an interface/idea) and we have a **model** (templated wrapper object which forwards the function to actual derived)
+</aside>
+
+<aside>
+💡
+
+***Q: What is going on here???***
+
+</aside>
+
+```cpp
+function(Ret (*f)(Param...)) 
+	: callable{std::make_unique<callable_impl<Ret (*)(Param...)>>(f)} {}
+```
+
+- This is the constructor for our implementation of `std_function`
+- Our `std_function` has a type erased member of type: `unique_ptr<callable_interface>` , the interface has the function `call()`
+    - We are initialising this type erased member
+- we `make_unique` which creates a **heap allocated** `callable_impl` which performs a `std::move`
+
+## Function Pointers
+
+**syntax** is pretty straightforward: `int (*fcnPtr)();` takes no arguments and returns an int.
+
+can **reassign function pointers** as long as the types match
+
+```cpp
+int foo() { return 5; }
+int goo() { return 6; }
+
+int main() {
+	int (*fcnPtr)(){&foo};
+	fcnPtr = &goo;
+	
+	// Dereference and call
+	(*fcnPtr());
+	
+	// Implicit dereference
+	fcnPtr();
+}
+```
+
+# Templates
+
+## Variadic templates
+
+```cpp
+template<typename... Args>
+void func(Args... args) { ... }
+```
+
+- `typename... Args` is a **template parameter pack** with **zero or more types**.
+- `Args...` unpacks the parameter pack, and allows the function to **accept a variable number of arguments** from that pack
+
+### Recursion
+
+- allows us to **extract** template parameters one by one
+
+```cpp
+// Base case (no more args left)
+void print() { "No more argument\n"; }
+
+// Recursive variadic template function
+template<typename T, typename... Args>
+void print(T first, Args... rest) {
+	std::cout << first << std::endl;
+	print(rest...);
+}
+
+int main() {
+	print(1, 2.5, "Hello", 'A');
+}
+```
+
+## CRTP - Curiously Recurring Template Pattern
+
+- when a **class A** has a **base class** which is a **template specialisation for A itself**
+- it allows the **Derived** to be used in the **Base**
+- This allows a **two-way relationship** where the **base class** can access the derived class by **static casting** itself as the derived class
+
+```cpp
+template <typename T>
+class Base
+{
+	void doSomething() 
+	{
+		T& derived = static_cast<T&>(*this);
+		// Use derived...
+	}
+};
+
+class Derived : Base<Derived>
+{...};
+```
+
+# Input and Output (I/O)
+
+## Types of Streams
+
+1. **Input Stream (`std::istream`)**: Used for reading data (input).
+    - Example: `std::cin` (for console input).
+    - Reads data from the input and stores it in variables.
+2. **Output Stream (`std::ostream`)**: Used for writing data (output).
+    - Example: `std::cout` (for console output).
+    - Sends data to the output device (e.g., console or file).
+3. **File Streams (`std::ifstream`, `std::ofstream`, `std::fstream`)**:
+    - `std::ifstream`: Input file stream for reading files.
+    - `std::ofstream`: Output file stream for writing to files.
+    - `std::fstream`: Allows both reading and writing to files.
+
+`>>` is for input `std::cin >> var`, `<<` is for output `std::cout << var` 
+
+## String Streams
+
+### **`std::istringstream` (Input String Stream)**
+
+`std::istringstream` is used for **parsing and reading data from a string**, similar to how you would read from an input stream like `std::cin`.
+
+```cpp
+std::string data = "123 45.67 Hello";
+std:istringstream iss(data);
+
+int intVal;
+float floatVal;
+std::string strVal;
+
+iss >> intVal >> floatVal >> strVal;
+```
+
+### **`std::ostringstream` (Output String Stream)**
+
+`std::ostringstream` is used for **writing formatted data to a string**, similar to how you would write to an output stream like `std::cout`.
+
+```cpp
+std::ostringstream oss;
+
+int age = 30;
+float height = 1.75;
+std::string name = "Alice";
+
+oss << "Name: " << name << ", Age: " << age << ", Height: " << height;
+std::string result = oss.str();
+```
+
+`str()` works for both. `iss` to **parse a string**, `oss` to **build a string**
