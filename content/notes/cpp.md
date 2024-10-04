@@ -43,6 +43,7 @@ weight = 1
   - [Memory Layout in C++](#memory-layout-in-c++)
     - [High-Level Summary](#high-level-summary)
     - [Global Variables](#global-variables)
+  - [`std::move`](#`std::move`)
 - [Classes](#classes)
   - [What is the `vtable` ?](#what-is-the-`vtable`-?)
     - [`__vtbl*` pointer](#`__vtbl*`-pointer)
@@ -843,6 +844,73 @@ void another_scope(std::unique_ptr<float>& uptr) {
 - declare as `extern` to tell compiler that it’s **defined in another file**.
 - declare as `static` to make it **file-local** (with same global lifetime)
 
+## `std::move`
+
+- `std::move` **casts an object to an rvalue reference**, signaling that the object can be **"moved from"** rather than copied.
+- It **does not move** the object itself—it only changes how the object is treated, allowing move constructors or move assignment operators to be invoked.
+- **Do not use** `std::move` on objects that you intend to keep using after the move. After the object has been moved, its state may be **invalid** or **empty**.
+- most useful when **returning objects by value**:
+
+```cpp
+class MyClass {
+public:
+	std::string data;
+	// Assume move constructor/assignment/etc...
+}
+
+MyClass createObject() {
+	MyClass obj("Hello");
+	return std::move(obj);
+}
+
+int main() {
+	MyClass myObj = createObject(); // Move constructor called
+}
+```
+
+- or when **passing objects to constructors/functions**
+
+```cpp
+void processObject(MyClass obj) {
+	std::cout << obj.data << std::endl;
+}
+
+int main() {
+	MyClass myObj("Hello");
+	
+	// Converts myObj to rvalue, move constructor used
+	processObject(std::move(myObj));
+}
+```
+
+Simple implementation of `std::move`
+
+```cpp
+template <typename T>
+struct remove_reference {
+    using type = T;  // Default: no reference
+};
+
+template <typename T>
+struct remove_reference<T&> {
+    using type = T;  // Removes lvalue reference
+};
+
+template <typename T>
+struct remove_reference<T&&> {
+    using type = T;  // Removes rvalue reference
+};
+
+template <typename T>
+typename remove_reference<T>::type&& my_move(T&& arg) {
+    return static_cast<typename remove_reference<T>::type&&>(arg);
+}
+```
+
+- `std::move` is implemented as a template function that casts its argument to an rvalue reference (`T&&`).
+- The object's reference qualifiers (i.e., whether it’s an lvalue or rvalue) are inspected using type traits, and `std::move` converts the object into an rvalue reference (`T&&`), allowing it to be "moved."
+- NB: `remove_reference<T>::type&&` is a **type trait** accessing the **type** alias
+
 # Classes
 
 ## What is the `vtable` ?
@@ -1243,3 +1311,4 @@ std::string result = oss.str();
 ```
 
 `str()` works for both. `iss` to **parse a string**, `oss` to **build a string**
+
