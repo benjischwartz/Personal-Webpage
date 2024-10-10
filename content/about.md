@@ -6,7 +6,7 @@ aliases = ["about-me"]
 author = "Benjamin Schwartz"
 +++
 
-I'm Benji. I'm a software engineer from Sydney, Australia.
+I'm Benji. I'm a software engineer from Sydney, Australia. Here's my [CV.](https://drive.google.com/file/d/1WfI-IznNBwUbZOG3TQgfSZtf_xnPIRJi/view?usp=sharing)
 
 I've just graduated with from [UNSW](https://www.unsw.edu.au/), with a Bachelor of Computer Engineering with First Class Honours, and an HD-Average. I was recently awarded the 'Brightest Minds' full scholarship for postgraduate studies at UNSW. My academic work covered many topics in computer science, focussing on both software and hardware design.
 

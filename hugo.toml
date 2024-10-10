@@ -53,12 +53,13 @@ style = "github-dark"
   url = "https://LinkedIn.com/in/benjaminjschwartz/"
 [[params.social]]
   name = "CV"
-  icon = "/images/cv-icon.png"
+  #icon = "/images/cv-icon.png"
+  icon = "fa-solid fa-file-pdf fa-2x"
   weight = 3
   url = "https://drive.google.com/file/d/1WfI-IznNBwUbZOG3TQgfSZtf_xnPIRJi/view?usp=sharing"
 [[params.social]]
   name = "Transcript"
-  icon = "/images/mortarboard.png"
+  icon = "fa-solid fa-award fa-2x"
   weight = 4 
   url = "https://drive.google.com/file/d/1oknQMVdrByhYE95pSkTbIWkkh6RAxOEi/view?usp=drive_link"
 
