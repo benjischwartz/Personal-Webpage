@@ -15,3 +15,5 @@ I'm primarily a backend/systems dev. I'm most competent in C++ but am also profi
 I've also done several side projects include a full-stack editing and visualization tool for CellML models, a rust-based multi-threaded spreadsheet, and a CNN Accelerator on an FPGA. Feel free to check out some of my [projects](/projects), as well as some [topics](/notes) I've been learning about.
 
 I enjoy solving really difficult problems. I'm currently incredibly excited by AI, data science, robotics and infrastructure.
+
+![My Image](/images/me_v2.png)
